@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "715512663356",
+    "project_id": "ghostpickshub",
+    "storage_bucket": "ghostpickshub.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:715512663356:android:4590a1a67482fc394b2239",
+        "android_client_info": {
+          "package_name": "com.ghostpicks.hub"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDVpfRkeZSOkVbZimwDXrO20T3sui_6cYU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

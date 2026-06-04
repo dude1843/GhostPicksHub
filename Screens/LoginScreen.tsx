@@ -1,12 +1,30 @@
 import { useState } from 'react';
 import {
   View, Text, TextInput, TouchableOpacity,
-  StyleSheet, Image, KeyboardAvoidingView, Platform
+  StyleSheet, Image, KeyboardAvoidingView, Platform, Alert
 } from 'react-native';
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '../firebaseConfig';
 
 export default function LoginScreen({ onLogin, navigation }: any) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  const handleLogin = async () => {
+    if (!email || !password) {
+      Alert.alert('Error', 'Please enter email and password');
+      return;
+    }
+    setLoading(true);
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      onLogin();
+    } catch (error: any) {
+      Alert.alert('Login Failed', error.message);
+    }
+    setLoading(false);
+  };
 
   return (
     <KeyboardAvoidingView
@@ -14,9 +32,7 @@ export default function LoginScreen({ onLogin, navigation }: any) {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
       <Image source={require('../assets/logo.png')} style={styles.logo} />
-
       <Text style={styles.tagline}>SPORTS ANALYSIS & PICKS</Text>
-
       <TextInput
         style={styles.input}
         placeholder="Email"
@@ -26,7 +42,6 @@ export default function LoginScreen({ onLogin, navigation }: any) {
         value={email}
         onChangeText={setEmail}
       />
-
       <TextInput
         style={styles.input}
         placeholder="Password"
@@ -35,18 +50,13 @@ export default function LoginScreen({ onLogin, navigation }: any) {
         value={password}
         onChangeText={setPassword}
       />
-
-      <TouchableOpacity style={styles.loginButton} onPress={onLogin}>
-        <Text style={styles.loginButtonText}>SIGN IN</Text>
+      <TouchableOpacity style={styles.loginButton} onPress={handleLogin} disabled={loading}>
+        <Text style={styles.loginButtonText}>{loading ? 'SIGNING IN...' : 'SIGN IN'}</Text>
       </TouchableOpacity>
-
       <TouchableOpacity onPress={() => navigation.navigate('Signup')}>
         <Text style={styles.signupLink}>Don't have an account? <Text style={styles.signupLinkBold}>Sign Up</Text></Text>
       </TouchableOpacity>
-
-      <Text style={styles.disclaimer}>
-        For entertainment and informational purposes only.
-      </Text>
+      <Text style={styles.disclaimer}>For entertainment and informational purposes only.</Text>
     </KeyboardAvoidingView>
   );
 }

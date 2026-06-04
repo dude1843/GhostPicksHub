@@ -1,8 +1,11 @@
 import { useState } from 'react';
 import {
   View, Text, TextInput, TouchableOpacity,
-  StyleSheet, Image, KeyboardAvoidingView, Platform, ScrollView
+  StyleSheet, Image, KeyboardAvoidingView, Platform, ScrollView, Alert
 } from 'react-native';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { doc, setDoc } from 'firebase/firestore';
+import { auth, db } from '../firebaseConfig';
 
 export default function SignupScreen({ onSignup, navigation }: any) {
   const [name, setName] = useState('');
@@ -13,8 +16,32 @@ export default function SignupScreen({ onSignup, navigation }: any) {
   const [check2, setCheck2] = useState(false);
   const [check3, setCheck3] = useState(false);
   const [ageConfirm, setAgeConfirm] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const allChecked = check1 && check2 && check3 && ageConfirm;
+
+  const handleSignup = async () => {
+    if (!name || !email || !phone || !password) {
+      Alert.alert('Error', 'Please fill in all fields');
+      return;
+    }
+    setLoading(true);
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      await setDoc(doc(db, 'users', userCredential.user.uid), {
+        name,
+        email,
+        phone,
+        createdAt: new Date().toISOString(),
+        smsOptIn: true,
+        pushOptIn: true,
+      });
+      onSignup();
+    } catch (error: any) {
+      Alert.alert('Signup Failed', error.message);
+    }
+    setLoading(false);
+  };
 
   return (
     <KeyboardAvoidingView
@@ -23,9 +50,7 @@ export default function SignupScreen({ onSignup, navigation }: any) {
     >
       <ScrollView contentContainerStyle={styles.container}>
         <Image source={require('../assets/logo.png')} style={styles.logo} />
-
         <Text style={styles.title}>CREATE ACCOUNT</Text>
-
         <TextInput
           style={styles.input}
           placeholder="Full Name"
@@ -58,46 +83,40 @@ export default function SignupScreen({ onSignup, navigation }: any) {
           value={password}
           onChangeText={setPassword}
         />
-
         <TouchableOpacity style={styles.checkRow} onPress={() => setCheck1(!check1)}>
           <View style={[styles.checkbox, check1 && styles.checkboxChecked]}>
             {check1 && <Text style={styles.checkmark}>✓</Text>}
           </View>
           <Text style={styles.checkText}>I understand this is a sports analysis and information service for entertainment purposes only.</Text>
         </TouchableOpacity>
-
         <TouchableOpacity style={styles.checkRow} onPress={() => setCheck2(!check2)}>
           <View style={[styles.checkbox, check2 && styles.checkboxChecked]}>
             {check2 && <Text style={styles.checkmark}>✓</Text>}
           </View>
           <Text style={styles.checkText}>I agree to the Terms of Service and Privacy Policy.</Text>
         </TouchableOpacity>
-
         <TouchableOpacity style={styles.checkRow} onPress={() => setCheck3(!check3)}>
           <View style={[styles.checkbox, check3 && styles.checkboxChecked]}>
             {check3 && <Text style={styles.checkmark}>✓</Text>}
           </View>
           <Text style={styles.checkText}>I agree to receive push notifications and SMS alerts for picks and updates.</Text>
         </TouchableOpacity>
-
         <TouchableOpacity style={styles.checkRow} onPress={() => setAgeConfirm(!ageConfirm)}>
           <View style={[styles.checkbox, ageConfirm && styles.checkboxChecked]}>
             {ageConfirm && <Text style={styles.checkmark}>✓</Text>}
           </View>
           <Text style={styles.checkText}>I confirm I am 21 years of age or older.</Text>
         </TouchableOpacity>
-
         <TouchableOpacity
-          style={[styles.button, !allChecked && styles.buttonDisabled]}
-          onPress={allChecked ? onSignup : undefined}
+          style={[styles.button, (!allChecked || loading) && styles.buttonDisabled]}
+          onPress={allChecked ? handleSignup : undefined}
+          disabled={!allChecked || loading}
         >
-          <Text style={styles.buttonText}>CREATE ACCOUNT</Text>
+          <Text style={styles.buttonText}>{loading ? 'CREATING ACCOUNT...' : 'CREATE ACCOUNT'}</Text>
         </TouchableOpacity>
-
         <TouchableOpacity onPress={() => navigation.navigate('Login')}>
           <Text style={styles.loginLink}>Already have an account? <Text style={styles.loginLinkBold}>Sign In</Text></Text>
         </TouchableOpacity>
-
         <Text style={styles.disclaimer}>For entertainment and informational purposes only.</Text>
       </ScrollView>
     </KeyboardAvoidingView>
