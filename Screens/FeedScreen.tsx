@@ -4,6 +4,12 @@ import {
   TouchableOpacity, Image
 } from 'react-native';
 
+const CAPPER_PHOTOS: { [key: string]: any } = {
+  'Jimmy': require('../assets/jimmy.png'),
+  'Benny': require('../assets/benny.jpg'),
+  'Juice AI': require('../assets/juice.jpg'),
+};
+
 const SAMPLE_POSTS = [
   {
     id: '1',
@@ -36,7 +42,7 @@ const SAMPLE_POSTS = [
     handle: '@ghostpicksjuice',
     sport: 'NBA',
     time: 'Today 8:30 AM',
-    content: 'That Line Reeks — Celtics -4.5. Model shows Boston covering in 78% of similar matchups this season. Data does not lie on this one.',
+    content: 'Celtics -4.5. Model shows Boston covering in 78% of similar matchups this season. Data does not lie on this one.',
     confidence: 'MEDIUM',
     tails: 31,
     fades: 12,
@@ -90,9 +96,13 @@ export default function FeedScreen() {
         <View key={post.id} style={[styles.card, post.type === 'promo' && styles.promoCard]}>
           <View style={styles.cardHeader}>
             <View style={styles.capperInfo}>
-              <View style={styles.avatar}>
-                <Text style={styles.avatarText}>{post.capper[0]}</Text>
-              </View>
+              {CAPPER_PHOTOS[post.capper] ? (
+                <Image source={CAPPER_PHOTOS[post.capper]} style={styles.avatar} />
+              ) : (
+                <View style={[styles.avatar, styles.avatarFallback]}>
+                  <Text style={styles.avatarText}>{post.capper[0]}</Text>
+                </View>
+              )}
               <View>
                 <Text style={styles.capperName}>{post.capper}</Text>
                 <Text style={styles.handle}>{post.handle}</Text>
@@ -189,13 +199,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   avatar: {
-    width: 38,
-    height: 38,
-    borderRadius: 19,
+    width: 42,
+    height: 42,
+    borderRadius: 21,
+    marginRight: 10,
+    resizeMode: 'cover',
+  },
+  avatarFallback: {
     backgroundColor: '#C9A227',
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: 10,
   },
   avatarText: {
     color: '#0A0A0A',
