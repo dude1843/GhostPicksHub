@@ -1,9 +1,9 @@
 import { View, Text, StyleSheet } from 'react-native';
 
-export default function TrailFadeScreen() {
+export default function StatsScreen() {
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>Trail or Fade</Text>
+      <Text style={styles.text}>Stats</Text>
     </View>
   );
 }
@@ -17,7 +17,6 @@ const styles = StyleSheet.create({
   },
   text: {
     color: '#C9A227',
-    fontSize: 24,
-    fontWeight: 'bold',
+    fontSize: 18,
   },
 });

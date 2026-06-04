@@ -6,7 +6,7 @@ import { Ionicons } from '@expo/vector-icons';
 import FeedScreen from './Screens/FeedScreen';
 import CapperScreen from './Screens/CapperScreen';
 import VIPScreen from './Screens/VIPScreen';
-import TrailFadeScreen from './Screens/TrailFadeScreen';
+import StatsScreen from './Screens/StatsScreen';
 import ProfileScreen from './Screens/ProfileScreen';
 import LoginScreen from './Screens/LoginScreen';
 import SignupScreen from './Screens/SignupScreen';
@@ -23,7 +23,7 @@ function MainTabs() {
           if (route.name === 'Feed') iconName = 'home';
           else if (route.name === 'Cappers') iconName = 'people';
           else if (route.name === 'VIP') iconName = 'ribbon';
-          else if (route.name === 'Trail/Fade') iconName = 'stats-chart';
+         else if (route.name === 'Stats') iconName = 'stats-chart';
           else iconName = 'person';
           return <Ionicons name={iconName as any} size={size} color={color} />;
         },
@@ -46,7 +46,7 @@ function MainTabs() {
       <Tab.Screen name="Feed" component={FeedScreen} />
       <Tab.Screen name="Cappers" component={CapperScreen} />
       <Tab.Screen name="VIP" component={VIPScreen} />
-      <Tab.Screen name="Trail/Fade" component={TrailFadeScreen} />
+     <Tab.Screen name="Stats" component={StatsScreen} />
       <Tab.Screen name="Profile" component={ProfileScreen} />
     </Tab.Navigator>
   );
