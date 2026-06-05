@@ -12,6 +12,7 @@ export default function SignupScreen({ onSignup, navigation }: any) {
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [check1, setCheck1] = useState(false);
   const [check2, setCheck2] = useState(false);
   const [check3, setCheck3] = useState(false);
@@ -27,13 +28,17 @@ export default function SignupScreen({ onSignup, navigation }: any) {
   };
 
   const handleSignup = async () => {
-    if (!name || !email || !phone || !password) {
+    if (!name || !email || !phone || !password || !confirmPassword) {
       Alert.alert('Error', 'Please fill in all fields');
       return;
     }
     const passwordError = validatePassword(password);
     if (passwordError) {
       Alert.alert('Weak Password', passwordError);
+      return;
+    }
+    if (password !== confirmPassword) {
+      Alert.alert('Error', 'Passwords do not match');
       return;
     }
     setLoading(true);
@@ -94,6 +99,14 @@ export default function SignupScreen({ onSignup, navigation }: any) {
           secureTextEntry
           value={password}
           onChangeText={setPassword}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Confirm Password"
+          placeholderTextColor="#666"
+          secureTextEntry
+          value={confirmPassword}
+          onChangeText={setConfirmPassword}
         />
         <TouchableOpacity style={styles.checkRow} onPress={() => setCheck1(!check1)}>
           <View style={[styles.checkbox, check1 && styles.checkboxChecked]}>
