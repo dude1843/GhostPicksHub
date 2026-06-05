@@ -1,8 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import FeedScreen from './Screens/FeedScreen';
 import CapperScreen from './Screens/CapperScreen';
 import VIPScreen from './Screens/VIPScreen';
@@ -14,7 +16,7 @@ import SignupScreen from './Screens/SignupScreen';
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 
-function MainTabs() {
+function MainTabs({ onLogout }: { onLogout: () => void }) {
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
@@ -23,7 +25,7 @@ function MainTabs() {
           if (route.name === 'Feed') iconName = 'home';
           else if (route.name === 'Cappers') iconName = 'people';
           else if (route.name === 'VIP') iconName = 'ribbon';
-         else if (route.name === 'Stats') iconName = 'stats-chart';
+          else if (route.name === 'Stats') iconName = 'stats-chart';
           else iconName = 'person';
           return <Ionicons name={iconName as any} size={size} color={color} />;
         },
@@ -46,14 +48,44 @@ function MainTabs() {
       <Tab.Screen name="Feed" component={FeedScreen} />
       <Tab.Screen name="Cappers" component={CapperScreen} />
       <Tab.Screen name="VIP" component={VIPScreen} />
-     <Tab.Screen name="Stats" component={StatsScreen} />
-      <Tab.Screen name="Profile" component={ProfileScreen} />
+      <Tab.Screen name="Stats" component={StatsScreen} />
+      <Tab.Screen name="Profile">
+        {(props) => <ProfileScreen {...props} onLogout={onLogout} />}
+      </Tab.Screen>
     </Tab.Navigator>
   );
 }
 
 export default function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    checkLoginStatus();
+  }, []);
+
+  const checkLoginStatus = async () => {
+    try {
+      const value = await AsyncStorage.getItem('isLoggedIn');
+      if (value === 'true') setIsLoggedIn(true);
+    } catch (e) {
+      console.log('AsyncStorage error:', e);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleLogin = async () => {
+    await AsyncStorage.setItem('isLoggedIn', 'true');
+    setIsLoggedIn(true);
+  };
+
+  const handleLogout = async () => {
+    await AsyncStorage.removeItem('isLoggedIn');
+    setIsLoggedIn(false);
+  };
+
+  if (loading) return <View style={{ flex: 1, backgroundColor: '#0A0A0A' }} />;
 
   return (
     <NavigationContainer>
@@ -61,14 +93,16 @@ export default function App() {
         {!isLoggedIn ? (
           <>
             <Stack.Screen name="Login">
-              {(props) => <LoginScreen {...props} onLogin={() => setIsLoggedIn(true)} />}
+              {(props) => <LoginScreen {...props} onLogin={handleLogin} />}
             </Stack.Screen>
             <Stack.Screen name="Signup">
-              {(props) => <SignupScreen {...props} onSignup={() => setIsLoggedIn(true)} />}
+              {(props) => <SignupScreen {...props} onSignup={handleLogin} />}
             </Stack.Screen>
           </>
         ) : (
-          <Stack.Screen name="Main" component={MainTabs} />
+          <Stack.Screen name="Main">
+            {(props) => <MainTabs {...props} onLogout={handleLogout} />}
+          </Stack.Screen>
         )}
       </Stack.Navigator>
     </NavigationContainer>
