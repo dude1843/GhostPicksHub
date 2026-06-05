@@ -1,19 +1,39 @@
+import { useEffect, useState } from 'react';
 import {
   View, Text, StyleSheet, TouchableOpacity,
-  Alert, ScrollView, Image
+  Alert, ScrollView
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
-import { auth } from '../firebaseConfig';
+import { auth, db } from '../firebaseConfig';
 import { signOut } from 'firebase/auth';
+import { doc, getDoc } from 'firebase/firestore';
 
-export default function ProfileScreen({ onLogout }: { onLogout?: () => void }) {
+export default function ProfileScreen({ onLogout, navigation }: { onLogout?: () => void, navigation?: any }) {
   const user = auth.currentUser;
-  const displayName = user?.displayName || 'Ghost Picks Member';
+  const [displayName, setDisplayName] = useState(user?.displayName || '');
   const email = user?.email || '';
   const createdAt = user?.metadata?.creationTime
     ? new Date(user.metadata.creationTime).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
     : 'Unknown';
+
+  useEffect(() => {
+    const fetchName = async () => {
+      if (user && !user.displayName) {
+        try {
+          const snap = await getDoc(doc(db, 'users', user.uid));
+          if (snap.exists()) {
+            setDisplayName(snap.data().name || 'Ghost Picks Member');
+          }
+        } catch {
+          setDisplayName('Ghost Picks Member');
+        }
+      } else if (user?.displayName) {
+        setDisplayName(user.displayName);
+      }
+    };
+    fetchName();
+  }, []);
 
   const handleLogout = async () => {
     Alert.alert('Log Out', 'Are you sure?', [
@@ -39,7 +59,10 @@ export default function ProfileScreen({ onLogout }: { onLogout?: () => void }) {
       {/* Header */}
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Profile</Text>
-        <TouchableOpacity style={styles.bellButton}>
+        <TouchableOpacity
+          style={styles.bellButton}
+          onPress={() => Alert.alert('Notifications', 'No new notifications.')}
+        >
           <Ionicons name="notifications-outline" size={24} color="#C9A227" />
           <View style={styles.bellDot} />
         </TouchableOpacity>
@@ -57,7 +80,7 @@ export default function ProfileScreen({ onLogout }: { onLogout?: () => void }) {
             </TouchableOpacity>
           </View>
           <View style={styles.userInfo}>
-            <Text style={styles.userName}>{displayName}</Text>
+            <Text style={styles.userName}>{displayName || 'Ghost Picks Member'}</Text>
             <Text style={styles.memberSince}>Member Since {createdAt}</Text>
             <View style={styles.badgeRow}>
               <View style={styles.badge}>
@@ -79,12 +102,15 @@ export default function ProfileScreen({ onLogout }: { onLogout?: () => void }) {
           <View style={styles.crownCircle}>
             <Ionicons name="shield" size={22} color="#C9A227" />
           </View>
-          <View>
+          <View style={{ flex: 1 }}>
             <Text style={styles.premiumTitle}>Go Premium</Text>
             <Text style={styles.premiumSub}>Access all cappers and exclusive picks</Text>
           </View>
         </View>
-        <TouchableOpacity style={styles.premiumButton}>
+        <TouchableOpacity
+          style={styles.premiumButton}
+          onPress={() => navigation?.getParent()?.navigate('Cappers')}
+        >
           <Text style={styles.premiumButtonText}>View Packages</Text>
         </TouchableOpacity>
       </View>
@@ -107,7 +133,10 @@ export default function ProfileScreen({ onLogout }: { onLogout?: () => void }) {
             <Text style={styles.rowLabel}>Subscription Status</Text>
             <Text style={styles.rowValue}>Free</Text>
           </View>
-          <TouchableOpacity style={styles.upgradeButton}>
+          <TouchableOpacity
+            style={styles.upgradeButton}
+            onPress={() => navigation?.getParent()?.navigate('Cappers')}
+          >
             <Text style={styles.upgradeText}>Upgrade</Text>
           </TouchableOpacity>
         </View>
@@ -134,7 +163,7 @@ export default function ProfileScreen({ onLogout }: { onLogout?: () => void }) {
           <Ionicons name="settings-outline" size={20} color="#C9A227" style={styles.rowIcon} />
           <View style={styles.rowText}>
             <Text style={styles.rowLabel}>Settings</Text>
-            <Text style={styles.rowValue}>Notifications, app preferences</Text>
+            <Text style={styles.rowValue}>Notifications, disclaimers, preferences</Text>
           </View>
           <Ionicons name="chevron-forward" size={18} color="#444" />
         </View>
@@ -145,9 +174,9 @@ export default function ProfileScreen({ onLogout }: { onLogout?: () => void }) {
       <View style={styles.activityRow}>
         {[
           { icon: 'receipt-outline', label: 'Purchases', count: 0 },
-          { icon: 'star-outline', label: 'Favorites', count: 0 },
-          { icon: 'download-outline', label: 'Downloads', count: 0 },
-          { icon: 'time-outline', label: 'Viewed', count: 0 },
+          { icon: 'trending-up-outline', label: 'Picks Tailed', count: 0 },
+          { icon: 'people-outline', label: 'Cappers', count: 0 },
+          { icon: 'trophy-outline', label: 'Win Rate', count: '--' },
         ].map((item, i) => (
           <View key={i} style={styles.activityItem}>
             <Ionicons name={item.icon as any} size={22} color="#C9A227" />
@@ -224,7 +253,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#2A2A2A', alignItems: 'center', justifyContent: 'center',
   },
   premiumTitle: { color: '#FFFFFF', fontSize: 15, fontWeight: 'bold' },
-  premiumSub: { color: '#888', fontSize: 11, marginTop: 2, flexShrink: 1 },
+  premiumSub: { color: '#888', fontSize: 11, marginTop: 2 },
   premiumButton: {
     backgroundColor: '#C9A227', borderRadius: 10,
     paddingHorizontal: 12, paddingVertical: 8,

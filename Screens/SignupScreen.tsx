@@ -3,7 +3,7 @@ import {
   View, Text, TextInput, TouchableOpacity,
   StyleSheet, Image, KeyboardAvoidingView, Platform, ScrollView, Alert
 } from 'react-native';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
 import { auth, db } from '../firebaseConfig';
 
@@ -20,14 +20,26 @@ export default function SignupScreen({ onSignup, navigation }: any) {
 
   const allChecked = check1 && check2 && check3 && ageConfirm;
 
+  const validatePassword = (pass: string) => {
+    if (pass.length < 8) return 'Password must be at least 8 characters';
+    if (!/\d/.test(pass)) return 'Password must contain at least one number';
+    return null;
+  };
+
   const handleSignup = async () => {
     if (!name || !email || !phone || !password) {
       Alert.alert('Error', 'Please fill in all fields');
       return;
     }
+    const passwordError = validatePassword(password);
+    if (passwordError) {
+      Alert.alert('Weak Password', passwordError);
+      return;
+    }
     setLoading(true);
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      await updateProfile(userCredential.user, { displayName: name });
       await setDoc(doc(db, 'users', userCredential.user.uid), {
         name,
         email,
@@ -77,7 +89,7 @@ export default function SignupScreen({ onSignup, navigation }: any) {
         />
         <TextInput
           style={styles.input}
-          placeholder="Password"
+          placeholder="Password (8+ chars, 1 number)"
           placeholderTextColor="#666"
           secureTextEntry
           value={password}
