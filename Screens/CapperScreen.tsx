@@ -1,8 +1,13 @@
 import { useState } from 'react';
 import {
   View, Text, StyleSheet, ScrollView,
-  TouchableOpacity, Image, Modal
+  TouchableOpacity, Image, Modal, SafeAreaView
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+
+const GOLD = '#C9A227';
+const BLACK = '#0A0A0A';
+const CARD = '#1A1A1A';
 
 const CAPPERS = [
   {
@@ -35,7 +40,7 @@ const CAPPERS = [
     record: '127-54',
     winRate: '70.2%',
     streak: '8W',
-    bio: 'Not your normal handicapper. Over 15 years of experience in the sports industry. Honesty. Hard Work. Consistency. RESULTS. Benny grew up in the restaurant business where he learned the importance of hospitality and customer engagement. He considers handicapping an art form — and he lets his numbers do the talking.',
+    bio: 'Not your normal handicapper. Over 15 years of experience in the sports industry. Honesty. Hard Work. Consistency. RESULTS. He considers handicapping an art form — and he lets his numbers do the talking.',
     packages: [
       { name: 'Benny Month', price: '$169.99', label: 'Sweep Special' },
       { name: 'Benny Top Tier Month', price: '$199.99', label: 'All Sports' },
@@ -55,7 +60,7 @@ const CAPPERS = [
     record: '44-21',
     winRate: '67.7%',
     streak: '4W',
-    bio: 'Powered by data, built by the Ghost Picks team. An AI-driven sports analysis model combining years of historical data, advanced pattern recognition, and real-time analytics to deliver calculated, emotion-free picks every single day. No gut feelings. No bad days. No excuses. Just the numbers. When the model locks in, it locks in for a reason — and the numbers never lie.',
+    bio: 'Powered by data, built by the Ghost Picks team. An AI-driven sports analysis model combining years of historical data, advanced pattern recognition, and real-time analytics. No gut feelings. No bad days. Just the numbers.',
     packages: [
       { name: 'Juice AI Day Pass', price: '$19.99', label: 'Data Drop' },
       { name: 'Juice AI Week', price: '$59.99', label: 'Full Model' },
@@ -66,22 +71,36 @@ const CAPPERS = [
 
 export default function CapperScreen() {
   const [selected, setSelected] = useState<typeof CAPPERS[0] | null>(null);
+  const [activeTab, setActiveTab] = useState<'picks' | 'results' | 'about'>('picks');
 
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.content}>
-        <Text style={styles.header}>OUR CAPPERS</Text>
+        {/* Header */}
+        <View style={styles.headerRow}>
+          <View style={styles.headerAccent} />
+          <Text style={styles.header}>OUR CAPPERS</Text>
+          <View style={styles.headerAccent} />
+        </View>
+
         {CAPPERS.map(capper => (
           <TouchableOpacity
             key={capper.id}
             style={styles.card}
-            onPress={() => setSelected(capper)}
+            onPress={() => { setSelected(capper); setActiveTab('picks'); }}
+            activeOpacity={0.85}
           >
             <Image source={capper.photo} style={styles.photo} />
             <View style={styles.cardInfo}>
-              <Text style={styles.name}>{capper.name}</Text>
+              {/* Name + verified */}
+              <View style={styles.nameRow}>
+                <Text style={styles.name}>{capper.name}</Text>
+                <Ionicons name="checkmark-circle" size={16} color={GOLD} />
+              </View>
               <Text style={styles.title}>{capper.title}</Text>
               <Text style={styles.handle}>{capper.handle}</Text>
+
+              {/* Stats */}
               <View style={styles.statsRow}>
                 <View style={styles.stat}>
                   <Text style={styles.statValue}>{capper.winRate}</Text>
@@ -96,81 +115,136 @@ export default function CapperScreen() {
                   <Text style={styles.statLabel}>Streak</Text>
                 </View>
               </View>
+
+              {/* Sport tags */}
               <View style={styles.sportsRow}>
-                {capper.sports.slice(0, 4).map(sport => (
+                {capper.sports.slice(0, 3).map(sport => (
                   <View key={sport} style={styles.sportTag}>
                     <Text style={styles.sportTagText}>{sport}</Text>
                   </View>
                 ))}
-                {capper.sports.length > 4 && (
+                {capper.sports.length > 3 && (
                   <View style={styles.sportTag}>
-                    <Text style={styles.sportTagText}>+{capper.sports.length - 4}</Text>
+                    <Text style={styles.sportTagText}>+{capper.sports.length - 3}</Text>
                   </View>
                 )}
               </View>
+            </View>
+            <View style={styles.chevronWrap}>
+              <Ionicons name="chevron-forward" size={20} color={GOLD} />
             </View>
           </TouchableOpacity>
         ))}
       </ScrollView>
 
+      {/* Detail Modal */}
       <Modal visible={!!selected} animationType="slide" onRequestClose={() => setSelected(null)}>
         {selected && (
-          <ScrollView style={styles.modal}>
-            <Image source={selected.photo} style={styles.modalPhoto} />
-            <View style={styles.modalContent}>
-              <TouchableOpacity style={styles.backButton} onPress={() => setSelected(null)}>
-                <Text style={styles.backText}>← Back</Text>
+          <SafeAreaView style={styles.modal}>
+            {/* Modal Header */}
+            <View style={styles.modalHeader}>
+              <TouchableOpacity style={styles.backBtn} onPress={() => setSelected(null)}>
+                <Ionicons name="arrow-back" size={22} color={GOLD} />
+                <Text style={styles.backText}>Back</Text>
               </TouchableOpacity>
-              <Text style={styles.modalName}>{selected.name}</Text>
-              <Text style={styles.modalTitle}>{selected.title}</Text>
-              <Text style={styles.modalHandle}>{selected.handle}</Text>
+              <Text style={styles.modalHeaderTitle}>{selected.name.toUpperCase()}</Text>
+              <TouchableOpacity>
+                <Ionicons name="star-outline" size={22} color={GOLD} />
+              </TouchableOpacity>
+            </View>
 
-              <View style={styles.modalStatsRow}>
-                <View style={styles.modalStat}>
-                  <Text style={styles.modalStatValue}>{selected.winRate}</Text>
-                  <Text style={styles.modalStatLabel}>Win Rate</Text>
-                </View>
-                <View style={styles.modalStat}>
-                  <Text style={styles.modalStatValue}>{selected.record}</Text>
-                  <Text style={styles.modalStatLabel}>Record</Text>
-                </View>
-                <View style={styles.modalStat}>
-                  <Text style={[styles.modalStatValue, { color: '#4CAF50' }]}>{selected.streak}</Text>
-                  <Text style={styles.modalStatLabel}>Streak</Text>
+            <ScrollView contentContainerStyle={{ paddingBottom: 60 }}>
+              {/* Photo + stats */}
+              <View style={styles.modalPhotoWrap}>
+                <Image source={selected.photo} style={styles.modalPhoto} />
+                <View style={styles.modalOverlay} />
+                <View style={styles.modalPhotoInfo}>
+                  <Text style={styles.modalName}>{selected.name}</Text>
+                  <Text style={styles.modalTitle}>{selected.title}</Text>
+                  <Text style={styles.modalHandle}>{selected.handle}</Text>
                 </View>
               </View>
 
-              <Text style={styles.sectionTitle}>ABOUT</Text>
-              <Text style={styles.bioText}>{selected.bio}</Text>
-
-              <Text style={styles.sectionTitle}>SPORTS</Text>
-              <View style={styles.sportsRow}>
-                {selected.sports.map(sport => (
-                  <View key={sport} style={styles.sportTag}>
-                    <Text style={styles.sportTagText}>{sport}</Text>
+              {/* Stats bar */}
+              <View style={styles.modalStatsRow}>
+                {[
+                  { value: selected.winRate, label: 'Win Rate' },
+                  { value: selected.record, label: 'Record' },
+                  { value: selected.streak, label: 'Streak' },
+                ].map((s, i) => (
+                  <View key={i} style={styles.modalStat}>
+                    <Text style={styles.modalStatValue}>{s.value}</Text>
+                    <Text style={styles.modalStatLabel}>{s.label}</Text>
                   </View>
                 ))}
               </View>
 
-              <Text style={styles.sectionTitle}>PACKAGES</Text>
-              {selected.packages.map((pkg, i) => (
-                <View key={i} style={styles.packageCard}>
-                  <View>
-                    <Text style={styles.packageName}>{pkg.name}</Text>
-                    {pkg.label && <Text style={styles.packageLabel}>{pkg.label}</Text>}
-                  </View>
-                  <TouchableOpacity style={styles.packageButton}>
-                    <Text style={styles.packagePrice}>{pkg.price}</Text>
-                    <Text style={styles.packageBuy}>GET</Text>
+              {/* Tabs */}
+              <View style={styles.tabRow}>
+                {(['picks', 'results', 'about'] as const).map(tab => (
+                  <TouchableOpacity
+                    key={tab}
+                    style={[styles.tab, activeTab === tab && styles.tabActive]}
+                    onPress={() => setActiveTab(tab)}
+                  >
+                    <Text style={[styles.tabText, activeTab === tab && styles.tabTextActive]}>
+                      {tab === 'picks' ? "Today's Picks" : tab === 'results' ? 'Past Results' : 'About'}
+                    </Text>
                   </TouchableOpacity>
-                </View>
-              ))}
+                ))}
+              </View>
 
-              <Text style={styles.disclaimer}>
-                For entertainment and informational purposes only.
-              </Text>
-            </View>
-          </ScrollView>
+              {/* Tab content */}
+              {activeTab === 'picks' && (
+                <View style={styles.tabContent}>
+                  <Text style={styles.tabPlaceholder}>Today's picks will appear here once live.</Text>
+                </View>
+              )}
+
+              {activeTab === 'results' && (
+                <View style={styles.tabContent}>
+                  <Text style={styles.tabPlaceholder}>Past results will appear here once live.</Text>
+                </View>
+              )}
+
+              {activeTab === 'about' && (
+                <View style={styles.tabContent}>
+                  {/* Bio */}
+                  <Text style={styles.sectionTitle}>ABOUT</Text>
+                  <Text style={styles.bioText}>{selected.bio}</Text>
+
+                  {/* Sports */}
+                  <Text style={styles.sectionTitle}>SPORTS</Text>
+                  <View style={styles.sportsRow}>
+                    {selected.sports.map(sport => (
+                      <View key={sport} style={styles.sportTag}>
+                        <Text style={styles.sportTagText}>{sport}</Text>
+                      </View>
+                    ))}
+                  </View>
+
+                  {/* Packages */}
+                  <Text style={styles.sectionTitle}>PACKAGES</Text>
+                  {selected.packages.map((pkg, i) => (
+                    <View key={i} style={styles.packageCard}>
+                      <View style={{ flex: 1 }}>
+                        <Text style={styles.packageName}>{pkg.name}</Text>
+                        {pkg.label && <Text style={styles.packageLabel}>{pkg.label}</Text>}
+                      </View>
+                      <TouchableOpacity style={styles.packageButton}>
+                        <Text style={styles.packagePrice}>{pkg.price}</Text>
+                        <Text style={styles.packageBuy}>GET</Text>
+                      </TouchableOpacity>
+                    </View>
+                  ))}
+
+                  <Text style={styles.disclaimer}>
+                    For entertainment and informational purposes only. 21+
+                  </Text>
+                </View>
+              )}
+            </ScrollView>
+          </SafeAreaView>
         )}
       </Modal>
     </View>
@@ -178,160 +252,136 @@ export default function CapperScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#0A0A0A',
+  container: { flex: 1, backgroundColor: BLACK },
+  content: { padding: 16, paddingBottom: 40 },
+  headerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 20,
+    gap: 10,
   },
-  content: {
-    padding: 16,
-    paddingBottom: 40,
-  },
+  headerAccent: { flex: 1, height: 1, backgroundColor: '#2A2A2A' },
   header: {
-    color: '#C9A227',
+    color: GOLD,
     fontSize: 13,
-    fontWeight: 'bold',
     letterSpacing: 3,
-    marginBottom: 16,
-    textAlign: 'center',
+    fontFamily: 'Oswald_600SemiBold',
   },
   card: {
-    backgroundColor: '#141414',
-    borderRadius: 12,
+    backgroundColor: CARD,
+    borderRadius: 16,
     marginBottom: 16,
     borderWidth: 1,
-    borderColor: '#222',
+    borderColor: '#2A2A2A',
     flexDirection: 'row',
     overflow: 'hidden',
   },
-  photo: {
-    width: 110,
-    height: 140,
-    resizeMode: 'cover',
-  },
-  cardInfo: {
-    flex: 1,
-    padding: 12,
-  },
-  name: {
-    color: '#FFFFFF',
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-  title: {
-    color: '#C9A227',
-    fontSize: 11,
-    marginBottom: 2,
-  },
-  handle: {
-    color: '#555',
-    fontSize: 11,
-    marginBottom: 10,
-  },
-  statsRow: {
-    flexDirection: 'row',
-    marginBottom: 10,
-    gap: 12,
-  },
-  stat: {
-    alignItems: 'center',
-  },
-  statValue: {
-    color: '#C9A227',
-    fontWeight: 'bold',
-    fontSize: 14,
-  },
-  statLabel: {
-    color: '#555',
-    fontSize: 10,
-  },
-  sportsRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 6,
-  },
+  photo: { width: 110, height: 150, resizeMode: 'cover' },
+  cardInfo: { flex: 1, padding: 14 },
+  nameRow: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 2 },
+  name: { color: '#FFF', fontSize: 18, fontFamily: 'Oswald_700Bold' },
+  title: { color: GOLD, fontSize: 11, fontFamily: 'Oswald_400Regular', marginBottom: 2 },
+  handle: { color: '#555', fontSize: 11, fontFamily: 'Oswald_400Regular', marginBottom: 10 },
+  statsRow: { flexDirection: 'row', marginBottom: 10, gap: 14 },
+  stat: { alignItems: 'center' },
+  statValue: { color: GOLD, fontFamily: 'Oswald_700Bold', fontSize: 14 },
+  statLabel: { color: '#555', fontSize: 10, fontFamily: 'Oswald_400Regular' },
+  sportsRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
   sportTag: {
     backgroundColor: '#1E1E1E',
     borderRadius: 4,
-    paddingHorizontal: 6,
-    paddingVertical: 2,
+    paddingHorizontal: 7,
+    paddingVertical: 3,
     borderWidth: 1,
     borderColor: '#333',
   },
-  sportTagText: {
-    color: '#C9A227',
-    fontSize: 10,
-    fontWeight: 'bold',
+  sportTagText: { color: GOLD, fontSize: 10, fontFamily: 'Oswald_700Bold' },
+  chevronWrap: { justifyContent: 'center', paddingRight: 12 },
+  modal: { flex: 1, backgroundColor: BLACK },
+  modalHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: '#1A1A1A',
   },
-  modal: {
-    flex: 1,
-    backgroundColor: '#0A0A0A',
+  backBtn: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  backText: { color: GOLD, fontSize: 15, fontFamily: 'Oswald_400Regular' },
+  modalHeaderTitle: { color: '#FFF', fontSize: 16, fontFamily: 'Oswald_700Bold', letterSpacing: 1 },
+  modalPhotoWrap: { position: 'relative', height: 260 },
+  modalPhoto: { width: '100%', height: 260, resizeMode: 'cover' },
+  modalOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0,0,0,0.5)',
   },
-  modalPhoto: {
-    width: '100%',
-    height: 300,
-    resizeMode: 'cover',
+  modalPhotoInfo: {
+    position: 'absolute',
+    bottom: 16,
+    left: 16,
   },
-  modalContent: {
-    padding: 20,
-  },
-  backButton: {
-    marginBottom: 16,
-  },
-  backText: {
-    color: '#C9A227',
-    fontSize: 16,
-  },
-  modalName: {
-    color: '#FFFFFF',
-    fontSize: 28,
-    fontWeight: 'bold',
-  },
-  modalTitle: {
-    color: '#C9A227',
-    fontSize: 13,
-    marginBottom: 4,
-  },
-  modalHandle: {
-    color: '#555',
-    fontSize: 13,
-    marginBottom: 20,
-  },
+  modalName: { color: '#FFF', fontSize: 26, fontFamily: 'Oswald_700Bold' },
+  modalTitle: { color: GOLD, fontSize: 13, fontFamily: 'Oswald_400Regular', marginTop: 2 },
+  modalHandle: { color: '#888', fontSize: 12, fontFamily: 'Oswald_400Regular', marginTop: 2 },
   modalStatsRow: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    backgroundColor: '#141414',
-    borderRadius: 12,
+    backgroundColor: CARD,
     padding: 16,
-    marginBottom: 24,
-    borderWidth: 1,
-    borderColor: '#222',
+    borderBottomWidth: 1,
+    borderBottomColor: '#2A2A2A',
   },
-  modalStat: {
+  modalStat: { alignItems: 'center' },
+  modalStatValue: { color: GOLD, fontFamily: 'Oswald_700Bold', fontSize: 20 },
+  modalStatLabel: { color: '#666', fontSize: 11, fontFamily: 'Oswald_400Regular', marginTop: 2 },
+  tabRow: {
+    flexDirection: 'row',
+    borderBottomWidth: 1,
+    borderBottomColor: '#2A2A2A',
+    backgroundColor: CARD,
+  },
+  tab: {
+    flex: 1,
+    paddingVertical: 14,
     alignItems: 'center',
   },
-  modalStatValue: {
-    color: '#C9A227',
-    fontWeight: 'bold',
-    fontSize: 20,
+  tabActive: {
+    borderBottomWidth: 2,
+    borderBottomColor: GOLD,
   },
-  modalStatLabel: {
+  tabText: {
+    color: '#666',
+    fontSize: 13,
+    fontFamily: 'Oswald_400Regular',
+  },
+  tabTextActive: {
+    color: GOLD,
+    fontFamily: 'Oswald_700Bold',
+  },
+  tabContent: { padding: 20 },
+  tabPlaceholder: {
     color: '#555',
-    fontSize: 11,
-    marginTop: 2,
+    fontSize: 13,
+    fontFamily: 'Oswald_400Regular',
+    textAlign: 'center',
+    marginTop: 20,
   },
   sectionTitle: {
-    color: '#C9A227',
+    color: GOLD,
     fontSize: 11,
-    fontWeight: 'bold',
+    fontFamily: 'Oswald_700Bold',
     letterSpacing: 2,
     marginBottom: 10,
     marginTop: 4,
   },
   bioText: {
-    color: '#AAAAAA',
+    color: '#AAA',
     fontSize: 14,
     lineHeight: 22,
     marginBottom: 20,
+    fontFamily: 'Oswald_400Regular',
   },
   packageCard: {
     backgroundColor: '#141414',
@@ -344,39 +394,23 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
   },
-  packageName: {
-    color: '#FFFFFF',
-    fontSize: 14,
-    fontWeight: 'bold',
-  },
-  packageLabel: {
-    color: '#555',
-    fontSize: 11,
-    marginTop: 2,
-  },
+  packageName: { color: '#FFF', fontSize: 14, fontFamily: 'Oswald_700Bold' },
+  packageLabel: { color: '#555', fontSize: 11, fontFamily: 'Oswald_400Regular', marginTop: 2 },
   packageButton: {
     alignItems: 'center',
-    backgroundColor: '#C9A227',
+    backgroundColor: GOLD,
     borderRadius: 8,
     paddingHorizontal: 14,
     paddingVertical: 8,
   },
-  packagePrice: {
-    color: '#0A0A0A',
-    fontWeight: 'bold',
-    fontSize: 13,
-  },
-  packageBuy: {
-    color: '#0A0A0A',
-    fontSize: 10,
-    fontWeight: 'bold',
-    letterSpacing: 1,
-  },
+  packagePrice: { color: BLACK, fontFamily: 'Oswald_700Bold', fontSize: 13 },
+  packageBuy: { color: BLACK, fontSize: 10, fontFamily: 'Oswald_700Bold', letterSpacing: 1 },
   disclaimer: {
     color: '#333',
     fontSize: 11,
     textAlign: 'center',
     marginTop: 30,
-    marginBottom: 40,
+    marginBottom: 20,
+    fontFamily: 'Oswald_400Regular',
   },
 });
