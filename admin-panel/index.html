@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Ghost Picks Admin Panel</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Oswald:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #0A0A0A;
+      color: #FFF;
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+    }
+
+    #loginGate {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 24px;
+    }
+    #loginGate img {
+      height: 200px;
+      object-fit: contain;
+      margin-bottom: 8px;
+    }
+    #loginGate h1 {
+      color: #C9A227;
+      font-family: 'Oswald', sans-serif;
+      font-size: 22px;
+      letter-spacing: 2px;
+      margin-bottom: 8px;
+    }
+    #loginGate p { color: #555; font-size: 13px; margin-bottom: 32px; }
+    #loginGate input {
+      width: 100%;
+      max-width: 360px;
+      background: #171717;
+      border: 1px solid #2A2A2A;
+      border-radius: 12px;
+      color: #FFF;
+      padding: 14px 18px;
+      font-size: 16px;
+      outline: none;
+      font-family: 'Inter', sans-serif;
+      margin-bottom: 12px;
+      text-align: center;
+      letter-spacing: 2px;
+    }
+    #loginGate input:focus { border-color: #C9A227; }
+    #loginGate button {
+      width: 100%;
+      max-width: 360px;
+      background: linear-gradient(135deg, #D4AF37, #F4D03F);
+      color: #0A0A0A;
+      border: none;
+      border-radius: 12px;
+      padding: 14px;
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      cursor: pointer;
+      font-family: 'Oswald', sans-serif;
+    }
+    #loginGate button:hover { box-shadow: 0 0 16px rgba(201,162,39,0.5); }
+    #loginError { color: #FF4444; font-size: 13px; margin-top: 12px; display: none; }
+
+    #mainPanel { display: none; }
+    .header {
+      background: #111;
+      border-bottom: 2px solid #C9A227;
+      padding: 18px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .header-left { display: flex; align-items: center; gap: 14px; }
+    .header h1 {
+      color: #C9A227;
+      font-size: 22px;
+      letter-spacing: 2px;
+      font-family: 'Oswald', sans-serif;
+      font-weight: 700;
+    }
+    .header span { color: #555; font-size: 13px; }
+    .logout-btn {
+      background: transparent;
+      border: 1px solid #555;
+      color: #888;
+      border-radius: 8px;
+      padding: 8px 16px;
+      font-size: 12px;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+    }
+    .logout-btn:hover { border-color: #FF4444; color: #FF4444; }
+    .container { max-width: 820px; margin: 48px auto; padding: 0 24px; }
+    .card {
+      background: #171717;
+      border-radius: 16px;
+      padding: 28px;
+      margin-bottom: 32px;
+      border: 1px solid #2A2A2A;
+    }
+    .card h2 {
+      color: #C9A227;
+      font-size: 15px;
+      letter-spacing: 2px;
+      margin-bottom: 24px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid #2A2A2A;
+      font-family: 'Oswald', sans-serif;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .form-group { margin-bottom: 20px; }
+    .form-group label {
+      display: block;
+      color: #C9A227;
+      font-size: 11px;
+      letter-spacing: 0.8px;
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+    .form-group select,
+    .form-group input,
+    .form-group textarea {
+      width: 100%;
+      background: #111;
+      border: 1px solid #2A2A2A;
+      border-radius: 12px;
+      color: #FFF;
+      padding: 13px 16px;
+      font-size: 16px;
+      outline: none;
+      font-family: 'Inter', sans-serif;
+      transition: border-color 0.2s;
+    }
+    .form-group select:focus,
+    .form-group input:focus,
+    .form-group textarea:focus { border-color: #C9A227; }
+    .form-group textarea { height: 110px; resize: vertical; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .btn {
+      background: linear-gradient(135deg, #D4AF37, #F4D03F);
+      color: #0A0A0A;
+      border: none;
+      border-radius: 12px;
+      padding: 15px 28px;
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      cursor: pointer;
+      width: 100%;
+      margin-top: 8px;
+      font-family: 'Oswald', sans-serif;
+      transition: box-shadow 0.2s;
+    }
+    .btn:hover { box-shadow: 0 0 16px rgba(201,162,39,0.5); }
+    .btn:disabled { background: #333; color: #666; cursor: not-allowed; box-shadow: none; }
+    .success {
+      background: #1A4A1A;
+      border: 1px solid #4CAF50;
+      color: #4CAF50;
+      border-radius: 10px;
+      padding: 12px 16px;
+      margin-bottom: 20px;
+      display: none;
+      font-size: 14px;
+    }
+    .error {
+      background: #4A1A1A;
+      border: 1px solid #FF4444;
+      color: #FF4444;
+      border-radius: 10px;
+      padding: 12px 16px;
+      margin-bottom: 20px;
+      display: none;
+      font-size: 14px;
+    }
+    .posts-list { margin-top: 8px; }
+    .post-item {
+      background: #111;
+      border-radius: 12px;
+      padding: 16px 18px;
+      margin-bottom: 12px;
+      border: 1px solid #2A2A2A;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 14px;
+    }
+    .post-item-info { flex: 1; }
+    .post-item-capper {
+      color: #C9A227;
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .post-item-content { color: #AAA; font-size: 13px; line-height: 1.6; }
+    .post-item-meta { color: #555; font-size: 11px; margin-top: 6px; }
+    .badge {
+      background: #2A2A2A;
+      color: #C9A227;
+      border-radius: 5px;
+      padding: 2px 8px;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+    .badge-promo { background: #C9A227; color: #0A0A0A; }
+    .badge-vip { background: #4A3A00; color: #F4D03F; }
+    .badge-both { background: #1A3A4A; color: #4FC3F7; }
+    .delete-btn {
+      background: transparent;
+      border: 1px solid #FF4444;
+      color: #FF4444;
+      border-radius: 8px;
+      padding: 7px 14px;
+      font-size: 11px;
+      cursor: pointer;
+      white-space: nowrap;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+    .delete-btn:hover { background: #FF4444; color: #FFF; }
+    .loading { color: #555; text-align: center; padding: 24px; }
+    .type-toggle { display: flex; gap: 10px; margin-bottom: 20px; }
+    .type-btn {
+      flex: 1;
+      background: #111;
+      border: 1px solid #2A2A2A;
+      color: #888;
+      border-radius: 12px;
+      padding: 12px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      font-family: 'Oswald', sans-serif;
+      transition: all 0.2s;
+    }
+    .type-btn.active { background: rgba(201,162,39,0.15); border-color: #C9A227; color: #C9A227; }
+    .type-btn:hover:not(.active) { border-color: #555; color: #CCC; }
+  </style>
+</head>
+<body>
+
+<div id="loginGate">
+  <img src="../assets/logo.png" alt="Ghost Picks" />
+  <h1>ADMIN ACCESS</h1>
+  <p>Enter your password to continue</p>
+  <input type="password" id="passwordInput" placeholder="••••••••" onkeydown="if(event.key==='Enter') checkPassword()" />
+  <button onclick="checkPassword()">ENTER</button>
+  <p id="loginError">❌ Incorrect password. Try again.</p>
+</div>
+
+<div id="mainPanel">
+  <div class="header">
+    <div class="header-left">
+      <img src="../assets/logo.png" style="height: 50px; object-fit: contain;" />
+      <div>
+        <h1>GHOST PICKS ADMIN</h1>
+        <span>Post picks and promos to the live feed</span>
+      </div>
+    </div>
+    <button class="logout-btn" onclick="logout()">LOG OUT</button>
+  </div>
+
+  <div class="container">
+    <div class="card">
+      <h2>📋 POST TO FEED</h2>
+      <div id="successMsg" class="success">✅ Post published successfully!</div>
+      <div id="errorMsg" class="error"></div>
+
+      <div class="type-toggle">
+        <button class="type-btn active" id="btnPick" onclick="setType('pick')">🎯 PICK</button>
+        <button class="type-btn" id="btnPromo" onclick="setType('promo')">🔥 PROMO</button>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>CAPPER</label>
+          <select id="capper">
+            <option value="Jimmy">Jimmy</option>
+            <option value="Benny">Benny</option>
+            <option value="Juice AI">Juice AI</option>
+          </select>
+        </div>
+        <div class="form-group" id="sportGroup">
+          <label>SPORT</label>
+          <select id="sport">
+            <option value="MLB">MLB</option>
+            <option value="NBA">NBA</option>
+            <option value="NHL">NHL</option>
+            <option value="NFL">NFL</option>
+            <option value="Soccer">Soccer</option>
+            <option value="NCAAB">NCAAB</option>
+            <option value="NCAAF">NCAAF</option>
+            <option value="WNBA">WNBA</option>
+            <option value="UFC">UFC</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>POST DESTINATION</label>
+        <select id="destination">
+          <option value="public">📢 Public Feed (Everyone)</option>
+          <option value="vip">👑 VIP Only (Paid Subscribers)</option>
+          <option value="both">⚡ Both (Public + VIP)</option>
+        </select>
+      </div>
+
+      <div class="form-group" id="confidenceGroup">
+        <label>CONFIDENCE</label>
+        <select id="confidence">
+          <option value="HIGH">HIGH</option>
+          <option value="MEDIUM">MEDIUM</option>
+          <option value="LOW">LOW</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>CONTENT</label>
+        <textarea id="content" placeholder="Write your pick analysis or promo message..."></textarea>
+      </div>
+
+      <button class="btn" onclick="submitPost()" id="submitBtn">PUBLISH TO FEED</button>
+    </div>
+
+    <div class="card">
+      <h2>📡 LIVE FEED POSTS</h2>
+      <div id="postsList" class="posts-list">
+        <div class="loading">Loading posts...</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+  import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+  import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, query, orderBy, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+  const ADMIN_PASSWORD = 'Ghost$843';
+  const firebaseConfig = {
+    apiKey: "AIzaSyB41JNv0R7UJQLLYndJ-N6rBPD1zyTO1R8",
+    authDomain: "ghostpickshub.firebaseapp.com",
+    projectId: "ghostpickshub",
+    storageBucket: "ghostpickshub.firebasestorage.app",
+    messagingSenderId: "715512663356",
+    appId: "1:715512663356:web:7a5ae48ec64e7ef54b2239"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  let currentType = 'pick';
+  let unsubscribe = null;
+
+  if (sessionStorage.getItem('gp_admin') === 'true') showPanel();
+
+  window.checkPassword = function() {
+    const val = document.getElementById('passwordInput').value;
+    if (val === ADMIN_PASSWORD) {
+      sessionStorage.setItem('gp_admin', 'true');
+      showPanel();
+    } else {
+      document.getElementById('loginError').style.display = 'block';
+      document.getElementById('passwordInput').value = '';
+    }
+  };
+
+  window.logout = function() {
+    sessionStorage.removeItem('gp_admin');
+    document.getElementById('mainPanel').style.display = 'none';
+    document.getElementById('loginGate').style.display = 'flex';
+    if (unsubscribe) unsubscribe();
+  };
+
+  function showPanel() {
+    document.getElementById('loginGate').style.display = 'none';
+    document.getElementById('mainPanel').style.display = 'block';
+    loadPosts();
+  }
+
+  window.setType = function(type) {
+    currentType = type;
+    document.getElementById('btnPick').classList.toggle('active', type === 'pick');
+    document.getElementById('btnPromo').classList.toggle('active', type === 'promo');
+    document.getElementById('sportGroup').style.display = type === 'pick' ? 'block' : 'none';
+    document.getElementById('confidenceGroup').style.display = type === 'pick' ? 'block' : 'none';
+  };
+
+  window.submitPost = async function() {
+    const btn = document.getElementById('submitBtn');
+    const successMsg = document.getElementById('successMsg');
+    const errorMsg = document.getElementById('errorMsg');
+    const content = document.getElementById('content').value.trim();
+
+    if (!content) {
+      errorMsg.textContent = '❌ Content cannot be empty.';
+      errorMsg.style.display = 'block';
+      return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = 'PUBLISHING...';
+    successMsg.style.display = 'none';
+    errorMsg.style.display = 'none';
+
+    try {
+      const post = {
+        capper: document.getElementById('capper').value,
+        handle: getHandle(document.getElementById('capper').value),
+        type: currentType,
+        content,
+        destination: document.getElementById('destination').value,
+        createdAt: serverTimestamp(),
+        tails: 0,
+        fades: 0,
+      };
+
+      if (currentType === 'pick') {
+        post.sport = document.getElementById('sport').value;
+        post.confidence = document.getElementById('confidence').value;
+      }
+
+      await addDoc(collection(db, 'posts'), post);
+      document.getElementById('content').value = '';
+      successMsg.style.display = 'block';
+      setTimeout(() => successMsg.style.display = 'none', 3000);
+    } catch (e) {
+      errorMsg.textContent = '❌ Error: ' + e.message;
+      errorMsg.style.display = 'block';
+    }
+
+    btn.disabled = false;
+    btn.textContent = 'PUBLISH TO FEED';
+  };
+
+  window.deletePost = async function(id) {
+    if (!confirm('Delete this post?')) return;
+    try {
+      await deleteDoc(doc(db, 'posts', id));
+    } catch (e) {
+      alert('Error deleting: ' + e.message);
+    }
+  };
+
+  function getHandle(capper) {
+    if (capper === 'Jimmy') return '@ghostpicksjimmy';
+    if (capper === 'Benny') return '@teambenny';
+    if (capper === 'Juice AI') return '@ghostpicksjuice';
+    return '';
+  }
+
+  function formatDate(ts) {
+    if (!ts) return 'Just now';
+    return ts.toDate().toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+  }
+
+  function getDestBadge(dest) {
+    if (dest === 'vip') return '<span class="badge badge-vip">👑 VIP</span>';
+    if (dest === 'both') return '<span class="badge badge-both">⚡ BOTH</span>';
+    return '<span class="badge">📢 PUBLIC</span>';
+  }
+
+  function loadPosts() {
+    const q = query(collection(db, 'posts'), orderBy('createdAt', 'desc'));
+    unsubscribe = onSnapshot(q, (snapshot) => {
+      const list = document.getElementById('postsList');
+      if (snapshot.empty) {
+        list.innerHTML = '<div class="loading">No posts yet.</div>';
+        return;
+      }
+      list.innerHTML = snapshot.docs.map(d => {
+        const p = d.data();
+        return `
+          <div class="post-item">
+            <div class="post-item-info">
+              <div class="post-item-capper">
+                ${p.capper}
+                <span class="badge ${p.type === 'promo' ? 'badge-promo' : ''}">${p.type === 'promo' ? 'PROMO' : p.sport || ''}</span>
+                ${p.confidence ? `<span class="badge">${p.confidence}</span>` : ''}
+                ${getDestBadge(p.destination)}
+              </div>
+              <div class="post-item-content">${p.content}</div>
+              <div class="post-item-meta">${formatDate(p.createdAt)} • Tails: ${p.tails || 0} • Fades: ${p.fades || 0}</div>
+            </div>
+            <button class="delete-btn" onclick="deletePost('${d.id}')">DELETE</button>
+          </div>
+        `;
+      }).join('');
+    });
+  }
+</script>
+
+</body>
+</html>
