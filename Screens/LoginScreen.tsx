@@ -3,7 +3,7 @@ import {
   View, Text, TextInput, TouchableOpacity,
   StyleSheet, Image, KeyboardAvoidingView, Platform, Alert
 } from 'react-native';
-import { signInWithEmailAndPassword } from 'firebase/auth';
+import { signInWithEmailAndPassword, sendPasswordResetEmail } from 'firebase/auth';
 import { auth } from '../firebaseConfig';
 
 export default function LoginScreen({ onLogin, navigation }: any) {
@@ -24,6 +24,19 @@ export default function LoginScreen({ onLogin, navigation }: any) {
       Alert.alert('Login Failed', error.message);
     }
     setLoading(false);
+  };
+
+  const handleForgotPassword = async () => {
+    if (!email) {
+      Alert.alert('Reset Password', 'Enter your email above and tap Forgot Password again.');
+      return;
+    }
+    try {
+      await sendPasswordResetEmail(auth, email);
+      Alert.alert('Email Sent', 'Check your inbox for a password reset link.');
+    } catch (error: any) {
+      Alert.alert('Error', error.message);
+    }
   };
 
   return (
@@ -50,6 +63,9 @@ export default function LoginScreen({ onLogin, navigation }: any) {
         value={password}
         onChangeText={setPassword}
       />
+      <TouchableOpacity onPress={handleForgotPassword} style={styles.forgotWrap}>
+        <Text style={styles.forgotText}>Forgot Password?</Text>
+      </TouchableOpacity>
       <TouchableOpacity style={styles.loginButton} onPress={handleLogin} disabled={loading}>
         <Text style={styles.loginButtonText}>{loading ? 'SIGNING IN...' : 'SIGN IN'}</Text>
       </TouchableOpacity>
@@ -92,6 +108,15 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     fontSize: 16,
     marginBottom: 16,
+  },
+  forgotWrap: {
+    alignSelf: 'flex-end',
+    marginBottom: 16,
+    marginTop: -8,
+  },
+  forgotText: {
+    color: '#C9A227',
+    fontSize: 13,
   },
   loginButton: {
     width: '100%',
