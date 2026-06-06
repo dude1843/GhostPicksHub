@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react';
-import { View } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFonts, Oswald_400Regular, Oswald_700Bold, Oswald_600SemiBold } from '@expo-google-fonts/oswald';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
 import FeedScreen from './Screens/FeedScreen';
 import CapperScreen from './Screens/CapperScreen';
 import VIPScreen from './Screens/VIPScreen';
@@ -17,49 +17,62 @@ import SignupScreen from './Screens/SignupScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
-
 const GOLD = '#C9A227';
+const BLACK = '#0A0A0A';
+
+const TABS = [
+  { name: 'Feed', icon: 'home' },
+  { name: 'Cappers', icon: 'people' },
+  { name: 'VIP', icon: 'ribbon' },
+  { name: 'Stats', icon: 'stats-chart' },
+  { name: 'Profile', icon: 'person' },
+];
+
+function CustomTabBar({ state, navigation }: any) {
+  const insets = useSafeAreaInsets();
+  return (
+    <View style={[styles.tabBar, { paddingBottom: insets.bottom || 8 }]}>
+      {state.routes.map((route: any, index: number) => {
+        const isFocused = state.index === index;
+        const tab = TABS[index];
+        return (
+          <TouchableOpacity
+            key={route.key}
+            style={styles.tabItem}
+            onPress={() => navigation.navigate(route.name)}
+            activeOpacity={0.8}
+          >
+            {/* Gold top line on active */}
+            {isFocused && <View style={styles.activeTopLine} />}
+
+            <Ionicons
+              name={tab.icon as any}
+              size={22}
+              color={isFocused ? GOLD : '#555'}
+            />
+            <Text style={[styles.tabLabel, isFocused && styles.tabLabelActive]}>
+              {tab.name}
+            </Text>
+          </TouchableOpacity>
+        );
+      })}
+    </View>
+  );
+}
 
 function MainTabs({ onLogout }: { onLogout: () => void }) {
   return (
     <Tab.Navigator
-      screenOptions={({ route }) => ({
-        tabBarIcon: ({ color, size }) => {
-          let iconName: string;
-          if (route.name === 'Feed') iconName = 'home';
-          else if (route.name === 'Cappers') iconName = 'people';
-          else if (route.name === 'VIP') iconName = 'ribbon';
-          else if (route.name === 'Stats') iconName = 'stats-chart';
-          else iconName = 'person';
-          return <Ionicons name={iconName as any} size={size} color={color} />;
-        },
-        tabBarActiveTintColor: GOLD,
-        tabBarInactiveTintColor: '#555555',
-        tabBarActiveBackgroundColor: 'rgba(201,162,39,0.12)',
-        tabBarStyle: {
-          backgroundColor: '#111111',
-          borderTopColor: '#2A2A2A',
-          borderTopWidth: 1,
-        },
-        tabBarItemStyle: {
-          borderRadius: 10,
-          marginHorizontal: 2,
-        },
-        tabBarLabelStyle: {
-          fontFamily: 'Oswald_400Regular',
-          fontSize: 11,
-          letterSpacing: 0.5,
-        },
-        headerStyle: {
-          backgroundColor: '#0A0A0A',
-        },
+      tabBar={(props) => <CustomTabBar {...props} />}
+      screenOptions={{
+        headerStyle: { backgroundColor: BLACK },
         headerTintColor: GOLD,
         headerTitleStyle: {
           fontFamily: 'Oswald_700Bold',
           fontSize: 18,
           letterSpacing: 1,
         },
-      })}
+      }}
     >
       <Tab.Screen name="Feed" component={FeedScreen} />
       <Tab.Screen name="Cappers" component={CapperScreen} />
@@ -107,7 +120,7 @@ export default function App() {
     setIsLoggedIn(false);
   };
 
-  if (loading || !fontsLoaded) return <View style={{ flex: 1, backgroundColor: '#0A0A0A' }} />;
+  if (loading || !fontsLoaded) return <View style={{ flex: 1, backgroundColor: BLACK }} />;
 
   return (
     <SafeAreaProvider>
@@ -132,3 +145,47 @@ export default function App() {
     </SafeAreaProvider>
   );
 }
+
+const styles = StyleSheet.create({
+  tabBar: {
+    flexDirection: 'row',
+    backgroundColor: '#111111',
+    borderTopWidth: 1,
+    borderTopColor: '#2A2A2A',
+    paddingTop: 0,
+    paddingHorizontal: 4,
+  },
+  tabItem: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 8,
+    paddingTop: 10,
+    gap: 3,
+    position: 'relative',
+  },
+  activeTopLine: {
+    position: 'absolute',
+    top: 0,
+    left: 8,
+    right: 8,
+    height: 2,
+    backgroundColor: GOLD,
+    borderRadius: 2,
+    shadowColor: GOLD,
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.8,
+    shadowRadius: 6,
+    elevation: 4,
+  },
+  tabLabel: {
+    color: '#555',
+    fontSize: 10,
+    fontFamily: 'Oswald_400Regular',
+    letterSpacing: 0.5,
+  },
+  tabLabelActive: {
+    color: GOLD,
+    fontFamily: 'Oswald_700Bold',
+  },
+});
