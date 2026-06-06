@@ -6,6 +6,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFonts, Oswald_400Regular, Oswald_700Bold, Oswald_600SemiBold } from '@expo-google-fonts/oswald';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import FeedScreen from './Screens/FeedScreen';
 import CapperScreen from './Screens/CapperScreen';
 import VIPScreen from './Screens/VIPScreen';
@@ -16,6 +17,8 @@ import SignupScreen from './Screens/SignupScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
+
+const GOLD = '#C9A227';
 
 function MainTabs({ onLogout }: { onLogout: () => void }) {
   return (
@@ -30,12 +33,17 @@ function MainTabs({ onLogout }: { onLogout: () => void }) {
           else iconName = 'person';
           return <Ionicons name={iconName as any} size={size} color={color} />;
         },
-        tabBarActiveTintColor: '#C9A227',
-        tabBarInactiveTintColor: '#666666',
+        tabBarActiveTintColor: GOLD,
+        tabBarInactiveTintColor: '#555555',
+        tabBarActiveBackgroundColor: 'rgba(201,162,39,0.12)',
         tabBarStyle: {
-          backgroundColor: '#1A1A1A',
-          borderTopColor: '#C9A227',
+          backgroundColor: '#111111',
+          borderTopColor: '#2A2A2A',
           borderTopWidth: 1,
+        },
+        tabBarItemStyle: {
+          borderRadius: 10,
+          marginHorizontal: 2,
         },
         tabBarLabelStyle: {
           fontFamily: 'Oswald_400Regular',
@@ -45,7 +53,7 @@ function MainTabs({ onLogout }: { onLogout: () => void }) {
         headerStyle: {
           backgroundColor: '#0A0A0A',
         },
-        headerTintColor: '#C9A227',
+        headerTintColor: GOLD,
         headerTitleStyle: {
           fontFamily: 'Oswald_700Bold',
           fontSize: 18,
@@ -102,23 +110,25 @@ export default function App() {
   if (loading || !fontsLoaded) return <View style={{ flex: 1, backgroundColor: '#0A0A0A' }} />;
 
   return (
-    <NavigationContainer>
-      <Stack.Navigator screenOptions={{ headerShown: false }}>
-        {!isLoggedIn ? (
-          <>
-            <Stack.Screen name="Login">
-              {(props) => <LoginScreen {...props} onLogin={handleLogin} />}
+    <SafeAreaProvider>
+      <NavigationContainer>
+        <Stack.Navigator screenOptions={{ headerShown: false }}>
+          {!isLoggedIn ? (
+            <>
+              <Stack.Screen name="Login">
+                {(props) => <LoginScreen {...props} onLogin={handleLogin} />}
+              </Stack.Screen>
+              <Stack.Screen name="Signup">
+                {(props) => <SignupScreen {...props} onSignup={handleLogin} />}
+              </Stack.Screen>
+            </>
+          ) : (
+            <Stack.Screen name="Main">
+              {(props) => <MainTabs {...props} onLogout={handleLogout} />}
             </Stack.Screen>
-            <Stack.Screen name="Signup">
-              {(props) => <SignupScreen {...props} onSignup={handleLogin} />}
-            </Stack.Screen>
-          </>
-        ) : (
-          <Stack.Screen name="Main">
-            {(props) => <MainTabs {...props} onLogout={handleLogout} />}
-          </Stack.Screen>
-        )}
-      </Stack.Navigator>
-    </NavigationContainer>
+          )}
+        </Stack.Navigator>
+      </NavigationContainer>
+    </SafeAreaProvider>
   );
 }
