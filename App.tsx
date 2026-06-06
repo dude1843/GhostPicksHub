@@ -7,6 +7,7 @@ import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFonts, Oswald_400Regular, Oswald_700Bold, Oswald_600SemiBold } from '@expo-google-fonts/oswald';
 import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
+import Purchases from 'react-native-purchases';
 import FeedScreen from './Screens/FeedScreen';
 import CapperScreen from './Screens/CapperScreen';
 import VIPScreen from './Screens/VIPScreen';
@@ -95,9 +96,10 @@ export default function App() {
     Oswald_700Bold,
   });
 
-  useEffect(() => {
-    checkLoginStatus();
-  }, []);
+useEffect(() => {
+  checkLoginStatus();
+  Purchases.configure({ apiKey: 'test_aHFTqrtPpcjtpqKWywyOoQROAFo' });
+}, []);
 
   const checkLoginStatus = async () => {
     try {
