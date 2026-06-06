@@ -4,6 +4,10 @@ import {
   TouchableOpacity, Image
 } from 'react-native';
 
+const GOLD = '#C9A227';
+const BLACK = '#0A0A0A';
+const CARD = '#141414';
+
 const CAPPER_PHOTOS: { [key: string]: any } = {
   'Jimmy': require('../assets/jimmy.png'),
   'Benny': require('../assets/benny.jpg'),
@@ -83,72 +87,72 @@ export default function FeedScreen() {
     }));
   };
 
-  const getConfidenceColor = (confidence: string) => {
-    if (confidence === 'HIGH') return '#C9A227';
-    if (confidence === 'MEDIUM') return '#888';
-    return '#555';
-  };
-
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      <Text style={styles.header}>GHOST PICKS FEED</Text>
+      {/* Header */}
+      <View style={styles.headerRow}>
+        <View style={styles.headerAccent} />
+        <Text style={styles.header}>GHOST PICKS FEED</Text>
+        <View style={styles.headerAccent} />
+      </View>
+
       {SAMPLE_POSTS.map(post => (
         <View key={post.id} style={[styles.card, post.type === 'promo' && styles.promoCard]}>
+
+          {/* Card Header */}
           <View style={styles.cardHeader}>
             <View style={styles.capperInfo}>
-              {CAPPER_PHOTOS[post.capper] ? (
+              <View style={styles.avatarWrap}>
                 <Image source={CAPPER_PHOTOS[post.capper]} style={styles.avatar} />
-              ) : (
-                <View style={[styles.avatar, styles.avatarFallback]}>
-                  <Text style={styles.avatarText}>{post.capper[0]}</Text>
-                </View>
-              )}
+              </View>
               <View>
                 <Text style={styles.capperName}>{post.capper}</Text>
                 <Text style={styles.handle}>{post.handle}</Text>
               </View>
             </View>
-            <View style={styles.rightHeader}>
-              {post.sport && (
-                <View style={styles.sportBadge}>
-                  <Text style={styles.sportText}>{post.sport}</Text>
-                </View>
-              )}
-              {post.type === 'promo' && (
-                <View style={styles.promoBadge}>
-                  <Text style={styles.promoText}>PROMO</Text>
-                </View>
-              )}
-            </View>
+            {post.sport && (
+              <View style={styles.sportBadge}>
+                <Text style={styles.sportText}>{post.sport}</Text>
+              </View>
+            )}
+            {post.type === 'promo' && (
+              <View style={styles.promoBadge}>
+                <Text style={styles.promoText}>PROMO</Text>
+              </View>
+            )}
           </View>
 
+          {/* Confidence */}
           {post.confidence && (
-            <View style={styles.confidenceRow}>
-              <Text style={[styles.confidence, { color: getConfidenceColor(post.confidence) }]}>
-                ● {post.confidence} CONFIDENCE
-              </Text>
-            </View>
+            <Text style={[
+              styles.confidence,
+              { color: post.confidence === 'HIGH' ? GOLD : '#888' }
+            ]}>
+              ⭐ {post.confidence} CONFIDENCE
+            </Text>
           )}
 
+          {/* Content */}
           <Text style={styles.postContent}>{post.content}</Text>
           <Text style={styles.time}>{post.time}</Text>
 
+          {/* Tail / Fade */}
           {post.type === 'pick' && (
             <View style={styles.voteRow}>
               <TouchableOpacity
                 style={[styles.tailButton, votes[post.id] === 'tail' && styles.tailActive]}
                 onPress={() => handleVote(post.id, 'tail')}
               >
-                <Text style={[styles.voteText, votes[post.id] === 'tail' && styles.voteTextActive]}>
-                  TAIL {post.tails + (votes[post.id] === 'tail' ? 1 : 0)}
+                <Text style={[styles.voteText, votes[post.id] === 'tail' && styles.voteTextDark]}>
+                  TAIL {post.tails! + (votes[post.id] === 'tail' ? 1 : 0)}
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={[styles.fadeButton, votes[post.id] === 'fade' && styles.fadeActive]}
                 onPress={() => handleVote(post.id, 'fade')}
               >
-                <Text style={[styles.voteText, votes[post.id] === 'fade' && styles.voteTextActive]}>
-                  FADE {post.fades + (votes[post.id] === 'fade' ? 1 : 0)}
+                <Text style={[styles.voteText, votes[post.id] === 'fade' && styles.voteTextDark]}>
+                  FADE {post.fades! + (votes[post.id] === 'fade' ? 1 : 0)}
                 </Text>
               </TouchableOpacity>
             </View>
@@ -162,116 +166,120 @@ export default function FeedScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0A0A0A',
+    backgroundColor: BLACK,
   },
   content: {
     padding: 16,
     paddingBottom: 40,
   },
+  headerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 20,
+    gap: 10,
+  },
+  headerAccent: {
+    flex: 1,
+    height: 1,
+    backgroundColor: '#2A2A2A',
+  },
   header: {
-    color: '#C9A227',
+    color: GOLD,
     fontSize: 13,
-    fontWeight: 'bold',
     letterSpacing: 3,
-    marginBottom: 16,
-    textAlign: 'center',
+    fontFamily: 'Oswald_600SemiBold',
   },
   card: {
-    backgroundColor: '#141414',
-    borderRadius: 12,
+    backgroundColor: CARD,
+    borderRadius: 14,
     padding: 16,
-    marginBottom: 16,
+    marginBottom: 14,
     borderWidth: 1,
     borderColor: '#222',
   },
   promoCard: {
-    borderColor: '#C9A227',
+    borderColor: GOLD,
     borderWidth: 1,
   },
   cardHeader: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: 10,
+    gap: 8,
   },
   capperInfo: {
     flexDirection: 'row',
     alignItems: 'center',
+    flex: 1,
+  },
+  avatarWrap: {
+    borderWidth: 2,
+    borderColor: GOLD,
+    borderRadius: 24,
+    marginRight: 10,
   },
   avatar: {
-    width: 42,
-    height: 42,
-    borderRadius: 21,
-    marginRight: 10,
+    width: 44,
+    height: 44,
+    borderRadius: 22,
     resizeMode: 'cover',
   },
-  avatarFallback: {
-    backgroundColor: '#C9A227',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  avatarText: {
-    color: '#0A0A0A',
-    fontWeight: 'bold',
-    fontSize: 16,
-  },
   capperName: {
-    color: '#FFFFFF',
-    fontWeight: 'bold',
+    color: '#FFF',
     fontSize: 15,
+    fontFamily: 'Oswald_700Bold',
+    letterSpacing: 0.5,
   },
   handle: {
     color: '#555',
     fontSize: 12,
-  },
-  rightHeader: {
-    alignItems: 'flex-end',
+    fontFamily: 'Oswald_400Regular',
   },
   sportBadge: {
     backgroundColor: '#1E1E1E',
     borderRadius: 6,
-    paddingHorizontal: 8,
-    paddingVertical: 3,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
     borderWidth: 1,
     borderColor: '#333',
   },
   sportText: {
-    color: '#C9A227',
+    color: GOLD,
     fontSize: 11,
-    fontWeight: 'bold',
+    fontFamily: 'Oswald_700Bold',
     letterSpacing: 1,
   },
   promoBadge: {
-    backgroundColor: '#C9A227',
+    backgroundColor: GOLD,
     borderRadius: 6,
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    marginTop: 4,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
   },
   promoText: {
-    color: '#0A0A0A',
+    color: BLACK,
     fontSize: 10,
-    fontWeight: 'bold',
+    fontFamily: 'Oswald_700Bold',
     letterSpacing: 1,
-  },
-  confidenceRow: {
-    marginBottom: 8,
   },
   confidence: {
     fontSize: 11,
-    fontWeight: 'bold',
+    fontFamily: 'Oswald_600SemiBold',
     letterSpacing: 1,
+    marginBottom: 8,
   },
   postContent: {
-    color: '#DDDDDD',
+    color: '#DDD',
     fontSize: 14,
     lineHeight: 22,
-    marginBottom: 10,
+    marginBottom: 8,
+    fontFamily: 'Oswald_400Regular',
   },
   time: {
     color: '#444',
     fontSize: 11,
-    marginBottom: 12,
+    marginBottom: 14,
+    fontFamily: 'Oswald_400Regular',
   },
   voteRow: {
     flexDirection: 'row',
@@ -280,13 +288,13 @@ const styles = StyleSheet.create({
   tailButton: {
     flex: 1,
     borderWidth: 1,
-    borderColor: '#C9A227',
+    borderColor: GOLD,
     borderRadius: 8,
     paddingVertical: 10,
     alignItems: 'center',
   },
   tailActive: {
-    backgroundColor: '#C9A227',
+    backgroundColor: GOLD,
   },
   fadeButton: {
     flex: 1,
@@ -301,11 +309,11 @@ const styles = StyleSheet.create({
   },
   voteText: {
     color: '#888',
-    fontWeight: 'bold',
+    fontFamily: 'Oswald_700Bold',
     fontSize: 13,
     letterSpacing: 1,
   },
-  voteTextActive: {
-    color: '#0A0A0A',
+  voteTextDark: {
+    color: BLACK,
   },
 });
