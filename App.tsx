@@ -5,6 +5,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useFonts, Oswald_400Regular, Oswald_700Bold, Oswald_600SemiBold } from '@expo-google-fonts/oswald';
 import FeedScreen from './Screens/FeedScreen';
 import CapperScreen from './Screens/CapperScreen';
 import VIPScreen from './Screens/VIPScreen';
@@ -36,12 +37,19 @@ function MainTabs({ onLogout }: { onLogout: () => void }) {
           borderTopColor: '#C9A227',
           borderTopWidth: 1,
         },
+        tabBarLabelStyle: {
+          fontFamily: 'Oswald_400Regular',
+          fontSize: 11,
+          letterSpacing: 0.5,
+        },
         headerStyle: {
           backgroundColor: '#0A0A0A',
         },
         headerTintColor: '#C9A227',
         headerTitleStyle: {
-          fontWeight: 'bold',
+          fontFamily: 'Oswald_700Bold',
+          fontSize: 18,
+          letterSpacing: 1,
         },
       })}
     >
@@ -59,6 +67,12 @@ function MainTabs({ onLogout }: { onLogout: () => void }) {
 export default function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [loading, setLoading] = useState(true);
+
+  const [fontsLoaded] = useFonts({
+    Oswald_400Regular,
+    Oswald_600SemiBold,
+    Oswald_700Bold,
+  });
 
   useEffect(() => {
     checkLoginStatus();
@@ -85,7 +99,7 @@ export default function App() {
     setIsLoggedIn(false);
   };
 
-  if (loading) return <View style={{ flex: 1, backgroundColor: '#0A0A0A' }} />;
+  if (loading || !fontsLoaded) return <View style={{ flex: 1, backgroundColor: '#0A0A0A' }} />;
 
   return (
     <NavigationContainer>
