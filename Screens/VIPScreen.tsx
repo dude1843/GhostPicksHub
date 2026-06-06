@@ -1,21 +1,15 @@
 import React, { useState } from 'react';
 import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  TouchableOpacity,
-  Image,
-  Modal,
-  SafeAreaView,
+  View, Text, StyleSheet, ScrollView,
+  TouchableOpacity, Image, Modal, SafeAreaView, Dimensions
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
 const GOLD = '#C9A227';
 const BLACK = '#0A0A0A';
-const DARK = '#141414';
 const CARD = '#1A1A1A';
 const LOCKED = '#111111';
+const SCREEN_WIDTH = Dimensions.get('window').width;
 
 const USER_IS_VIP = false;
 const USER_SUBSCRIPTIONS: string[] = [];
@@ -28,9 +22,7 @@ const CAPPERS = [
     image: require('../assets/jimmy.png'),
     record: '127-54',
     winRate: '70.2%',
-    streak: '🔥 6 Win Streak',
     lastTen: '6-4 Last 10',
-    todayStatus: '3 New Picks',
     packages: [
       { label: 'Daily', price: '$24.99', sub: '/day' },
       { label: 'Weekly', price: '$99.99', sub: '/week' },
@@ -39,26 +31,8 @@ const CAPPERS = [
     card: {
       date: 'June 6, 2026',
       plays: [
-        {
-          id: '1',
-          label: 'TOP PLAY',
-          sport: 'MLB',
-          pick: 'Yankees ML',
-          line: '-120',
-          confidence: 8.5,
-          analysis: 'Strong pitching matchup. Fade the public here.',
-          result: null,
-        },
-        {
-          id: '2',
-          label: 'PLAY #2',
-          sport: 'NBA',
-          pick: 'Knicks +5.5',
-          line: '-110',
-          confidence: 7,
-          analysis: 'Home dog with backdoor cover history.',
-          result: null,
-        },
+        { id: '1', label: 'TOP PLAY', sport: 'MLB', pick: 'Yankees ML', line: '-120', confidence: 8.5, analysis: 'Strong pitching matchup. Fade the public here.', result: null },
+        { id: '2', label: 'PLAY #2', sport: 'NBA', pick: 'Knicks +5.5', line: '-110', confidence: 7, analysis: 'Home dog with backdoor cover history.', result: null },
       ],
     },
   },
@@ -69,9 +43,7 @@ const CAPPERS = [
     image: require('../assets/benny.jpg'),
     record: '259-144',
     winRate: '64.3%',
-    streak: '🔥 8 Win Streak',
     lastTen: '8-2 Last 10',
-    todayStatus: '2 New Picks',
     packages: [
       { label: 'Daily', price: '$19.99', sub: '/day' },
       { label: 'Weekly', price: '$79.99', sub: '/week' },
@@ -80,16 +52,7 @@ const CAPPERS = [
     card: {
       date: 'June 6, 2026',
       plays: [
-        {
-          id: '1',
-          label: 'TOP PLAY',
-          sport: 'MLB',
-          pick: 'Dodgers ML',
-          line: '-130',
-          confidence: 9,
-          analysis: 'Elite starter on the mound. Line is soft.',
-          result: null,
-        },
+        { id: '1', label: 'TOP PLAY', sport: 'MLB', pick: 'Dodgers ML', line: '-130', confidence: 9, analysis: 'Elite starter on the mound. Line is soft.', result: null },
       ],
     },
   },
@@ -100,9 +63,7 @@ const CAPPERS = [
     image: require('../assets/juice.jpg'),
     record: '88-47',
     winRate: '65.2%',
-    streak: '🤖 AI Model Hot',
     lastTen: '7-3 Last 10',
-    todayStatus: '1 New Pick',
     packages: [
       { label: 'Daily', price: '$14.99', sub: '/day' },
       { label: 'Weekly', price: '$69.99', sub: '/week' },
@@ -111,16 +72,7 @@ const CAPPERS = [
     card: {
       date: 'June 6, 2026',
       plays: [
-        {
-          id: '1',
-          label: 'TOP PLAY',
-          sport: 'MLB',
-          pick: 'Mariners Under 8.5',
-          line: '-105',
-          confidence: 7.5,
-          analysis: 'Combined ERA flags an under here. That line reeks.',
-          result: null,
-        },
+        { id: '1', label: 'TOP PLAY', sport: 'MLB', pick: 'Mariners Under 8.5', line: '-105', confidence: 7.5, analysis: 'Combined ERA flags an under here.', result: null },
       ],
     },
   },
@@ -171,9 +123,7 @@ export default function VIPScreen() {
               <View style={{ marginLeft: 14 }}>
                 <Text style={styles.cardName}>{selectedCapper.name.toUpperCase()}</Text>
                 <Text style={styles.cardHandle}>{selectedCapper.handle}</Text>
-                <Text style={styles.cardRecord}>
-                  {selectedCapper.record} • {selectedCapper.winRate}
-                </Text>
+                <Text style={styles.cardRecord}>{selectedCapper.record} • {selectedCapper.winRate}</Text>
               </View>
             </View>
             <Text style={styles.cardDate}>📅 {selectedCapper.card.date}</Text>
@@ -194,11 +144,6 @@ export default function VIPScreen() {
                   <Ionicons name="chevron-down" size={16} color={GOLD} />
                 </TouchableOpacity>
                 <Text style={styles.analysisText}>{play.analysis}</Text>
-                {play.result && (
-                  <View style={[styles.resultBadge, play.result === 'WIN' ? styles.winBadge : styles.lossBadge]}>
-                    <Text style={styles.resultText}>{play.result}</Text>
-                  </View>
-                )}
               </View>
             ))}
           </ScrollView>
@@ -221,21 +166,15 @@ export default function VIPScreen() {
               <Image source={selectedCapper.image} style={styles.unlockAvatar} />
               <Text style={styles.unlockTitle}>{selectedCapper.name.toUpperCase()} PREMIUM</Text>
               <Text style={styles.unlockSub}>Today's Picks Ready</Text>
-              <Text style={styles.unlockRecord}>
-                {selectedCapper.record} • {selectedCapper.winRate} • {selectedCapper.lastTen}
-              </Text>
+              <Text style={styles.unlockRecord}>{selectedCapper.record} • {selectedCapper.winRate} • {selectedCapper.lastTen}</Text>
               {['Pick #1', 'Pick #2', 'Top Play'].map((p) => (
                 <View key={p} style={styles.lockedPickRow}>
                   <Ionicons name="lock-closed" size={16} color="#555" />
                   <Text style={styles.lockedPickText}>{p}</Text>
                 </View>
               ))}
-              <Text style={styles.unlockCta}>
-                Unlock {selectedCapper.name}'s Premium Package
-              </Text>
-              <Text style={styles.unlockSubCta}>
-                Get instant access to all picks, analysis, and alerts.
-              </Text>
+              <Text style={styles.unlockCta}>Unlock {selectedCapper.name}'s Premium Package</Text>
+              <Text style={styles.unlockSubCta}>Get instant access to all picks, analysis, and alerts.</Text>
               {selectedCapper.packages.map((pkg) => (
                 <TouchableOpacity key={pkg.label} style={styles.pkgBtn}>
                   <View style={styles.pkgBtnInner}>
@@ -257,28 +196,44 @@ export default function VIPScreen() {
     return (
       <SafeAreaView style={styles.container}>
         <ScrollView contentContainerStyle={styles.lockedPage}>
-          <View style={styles.lockHero}>
-            <View style={styles.lockIconWrap}>
-              <Ionicons name="lock-closed" size={40} color={GOLD} />
-            </View>
-            <Text style={styles.lockTitle}>VIP ACCESS</Text>
-            <Text style={styles.lockTagline}>
-              Premium Picks.{'\n'}Verified Records.{'\n'}Real-Time Alerts.
-            </Text>
+
+          {/* VIP LOCKED IMAGE — FULL SCREEN WIDTH */}
+          <Image
+            source={require('../assets/vip-locked.png')}
+            style={{
+              width: SCREEN_WIDTH,
+              height: SCREEN_WIDTH,
+              resizeMode: 'contain',
+              marginBottom: 8,
+            }}
+          />
+
+          <Text style={styles.lockTitle}>VIP ACCESS</Text>
+          <Text style={styles.lockTagline}>Premium Picks.{'\n'}Verified Records.{'\n'}Real-Time Alerts.</Text>
+
+          <View style={styles.benefitsGrid}>
+            {[
+              { icon: 'calendar-outline', title: 'Daily Premium Plays', sub: 'Expert-curated picks\nupdated daily' },
+              { icon: 'people-outline', title: 'All Cappers', sub: 'Access all top-performing\nverified cappers' },
+              { icon: 'hardware-chip-outline', title: 'Juice AI Access', sub: 'AI-powered insights\nand predictions' },
+              { icon: 'trending-up-outline', title: 'Live Win Tracking', sub: 'Real-time results\nas they happen' },
+              { icon: 'notifications-outline', title: 'SMS Alerts', sub: 'Get texts when\npicks drop' },
+              { icon: 'time-outline', title: 'Early Release Picks', sub: 'Get picks before\nthe public' },
+            ].map((b) => (
+              <View key={b.title} style={styles.benefitCard}>
+                <View style={styles.benefitIconWrap}>
+                  <Ionicons name={b.icon as any} size={22} color={GOLD} />
+                </View>
+                <Text style={styles.benefitTitle}>{b.title}</Text>
+                <Text style={styles.benefitSub}>{b.sub}</Text>
+              </View>
+            ))}
           </View>
-          {['Daily Premium Plays','All Cappers','Juice AI Access','Live Win Tracking','Members Chat','Early Release Picks'].map((f) => (
-            <View key={f} style={styles.featureRow}>
-              <Ionicons name="checkmark-circle" size={18} color={GOLD} />
-              <Text style={styles.featureText}>{f}</Text>
-            </View>
-          ))}
+
           <Text style={styles.sectionLabel}>SELECT A CAPPER TO UNLOCK</Text>
+
           {CAPPERS.map((capper) => (
-            <TouchableOpacity
-              key={capper.id}
-              style={styles.lockedCapperCard}
-              onPress={() => handleCapperPress(capper)}
-            >
+            <TouchableOpacity key={capper.id} style={styles.lockedCapperCard} onPress={() => handleCapperPress(capper)}>
               <Image source={capper.image} style={styles.lockedCapperAvatar} />
               <View style={{ flex: 1, marginLeft: 12 }}>
                 <Text style={styles.lockedCapperName}>{capper.name}</Text>
@@ -290,6 +245,11 @@ export default function VIPScreen() {
               </View>
             </TouchableOpacity>
           ))}
+
+          <View style={styles.trustBar}>
+            <Ionicons name="shield-checkmark-outline" size={18} color={GOLD} />
+            <Text style={styles.trustText}>Secure. Verified. Trusted.</Text>
+          </View>
           <Text style={styles.disclaimer}>For entertainment purposes only. 21+</Text>
         </ScrollView>
         {selectedCapper && renderUnlockCard()}
@@ -297,21 +257,46 @@ export default function VIPScreen() {
     );
   }
 
+  // MEMBER VIEW
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={{ paddingBottom: 40 }}>
-        <View style={styles.memberHeader}>
-          <Ionicons name="trophy" size={22} color={GOLD} />
-          <Text style={styles.memberTitle}>VIP MEMBERS AREA</Text>
+
+        {/* HERO — crown image takes full width above the card */}
+        <Image
+          source={require('../assets/vip-crown.png')}
+          style={{
+            width: SCREEN_WIDTH,
+            height: SCREEN_WIDTH * 0.7,
+            resizeMode: 'contain',
+            marginBottom: -20,
+          }}
+        />
+
+        <View style={styles.memberHero}>
+          <View style={styles.trophyBox}>
+            <Ionicons name="trophy" size={28} color={GOLD} />
+          </View>
+          <View style={{ flex: 1, marginLeft: 12 }}>
+            <Text style={styles.memberTitle}><Text style={{ color: GOLD }}>VIP</Text> MEMBERS AREA</Text>
+            <Text style={styles.memberSubtitle}>Today's Premium Content</Text>
+            <View style={styles.releaseBadge}>
+              <Ionicons name="flash" size={12} color={BLACK} />
+              <Text style={styles.releaseText}>{CAPPERS.length} New Releases Today</Text>
+            </View>
+          </View>
         </View>
-        <Text style={styles.todayContent}>Today's Premium Content</Text>
-        <Text style={styles.newRelease}>⚡ {CAPPERS.length} New Releases Today</Text>
+
+        <View style={styles.sectionRow}>
+          <View style={styles.sectionAccent} />
+          <Text style={styles.sectionLabelWhite}>TODAY'S TOP VIP PICKS</Text>
+          <TouchableOpacity>
+            <Text style={styles.seeAll}>See all picks →</Text>
+          </TouchableOpacity>
+        </View>
+
         {CAPPERS.map((capper) => (
-          <TouchableOpacity
-            key={capper.id}
-            style={styles.capperRow}
-            onPress={() => handleCapperPress(capper)}
-          >
+          <TouchableOpacity key={capper.id} style={styles.capperRow} onPress={() => handleCapperPress(capper)}>
             <Image source={capper.image} style={styles.rowAvatar} />
             <View style={{ flex: 1, marginLeft: 12 }}>
               <Text style={styles.rowName}>{capper.name.toUpperCase()}</Text>
@@ -322,104 +307,107 @@ export default function VIPScreen() {
             </TouchableOpacity>
           </TouchableOpacity>
         ))}
+
+        <View style={styles.trustBarMember}>
+          <View style={styles.trustBarIcon}>
+            <Ionicons name="shield-checkmark-outline" size={20} color={GOLD} />
+          </View>
+          <View style={{ flex: 1 }}>
+            <Text style={styles.trustBarTitle}>Verified. Trusted. Proven.</Text>
+            <Text style={styles.trustBarSub}>All VIP members are verified and performance is tracked in real-time.</Text>
+          </View>
+          <Ionicons name="chevron-forward" size={18} color="#555" />
+        </View>
+
       </ScrollView>
-      {selectedCapper &&
-        (isSubscribed(selectedCapper.id) ? renderPickCard() : renderUnlockCard())}
+      {selectedCapper && (isSubscribed(selectedCapper.id) ? renderPickCard() : renderUnlockCard())}
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: BLACK },
-  lockedPage: { alignItems: 'center', paddingBottom: 40, paddingTop: 20, paddingHorizontal: 20 },
-  lockHero: { alignItems: 'center', marginBottom: 24 },
-  lockIconWrap: {
-    width: 80, height: 80, borderRadius: 40,
-    backgroundColor: '#1A1A1A', borderWidth: 2, borderColor: GOLD,
-    alignItems: 'center', justifyContent: 'center', marginBottom: 12,
-  },
-  lockTitle: { color: GOLD, fontSize: 26, fontWeight: '800', letterSpacing: 2 },
-  lockTagline: { color: '#AAA', fontSize: 14, textAlign: 'center', marginTop: 8, lineHeight: 22 },
-  featureRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 8, alignSelf: 'flex-start' },
-  featureText: { color: '#CCC', fontSize: 14, marginLeft: 8 },
-  sectionLabel: { color: '#666', fontSize: 11, fontWeight: '700', letterSpacing: 1, marginTop: 28, marginBottom: 12, alignSelf: 'flex-start' },
-  lockedCapperCard: {
-    flexDirection: 'row', alignItems: 'center', backgroundColor: CARD,
-    borderRadius: 12, padding: 14, marginBottom: 12, width: '100%',
-    borderWidth: 1, borderColor: '#2A2A2A',
-  },
+  lockedPage: { alignItems: 'center', paddingBottom: 40, paddingTop: 0, paddingHorizontal: 16 },
+  lockTitle: { color: GOLD, fontSize: 28, fontFamily: 'Oswald_700Bold', letterSpacing: 2, marginBottom: 8, marginTop: 8 },
+  lockTagline: { color: '#AAA', fontSize: 14, textAlign: 'center', marginBottom: 24, lineHeight: 22, fontFamily: 'Oswald_400Regular' },
+  benefitsGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginBottom: 28, width: '100%' },
+  benefitCard: { backgroundColor: CARD, borderRadius: 12, padding: 14, width: '47%', borderWidth: 1, borderColor: '#2A2A2A' },
+  benefitIconWrap: { width: 40, height: 40, borderRadius: 20, backgroundColor: 'rgba(201,162,39,0.12)', alignItems: 'center', justifyContent: 'center', marginBottom: 8 },
+  benefitTitle: { color: '#FFF', fontSize: 13, fontFamily: 'Oswald_700Bold', marginBottom: 4 },
+  benefitSub: { color: '#666', fontSize: 11, fontFamily: 'Oswald_400Regular', lineHeight: 16 },
+  sectionLabel: { color: '#666', fontSize: 11, fontFamily: 'Oswald_700Bold', letterSpacing: 1, marginBottom: 12, alignSelf: 'flex-start' },
+  lockedCapperCard: { flexDirection: 'row', alignItems: 'center', backgroundColor: CARD, borderRadius: 12, padding: 14, marginBottom: 12, width: '100%', borderWidth: 1, borderColor: '#2A2A2A' },
   lockedCapperAvatar: { width: 52, height: 52, borderRadius: 26, borderWidth: 2, borderColor: GOLD },
-  lockedCapperName: { color: '#FFF', fontSize: 15, fontWeight: '700' },
-  lockedCapperStat: { color: '#888', fontSize: 12, marginTop: 2 },
-  lockedCapperPkg: { color: GOLD, fontSize: 12, marginTop: 3, fontWeight: '600' },
+  lockedCapperName: { color: '#FFF', fontSize: 15, fontFamily: 'Oswald_700Bold' },
+  lockedCapperStat: { color: '#888', fontSize: 12, marginTop: 2, fontFamily: 'Oswald_400Regular' },
+  lockedCapperPkg: { color: GOLD, fontSize: 12, marginTop: 3, fontFamily: 'Oswald_600SemiBold' },
   unlockTag: { backgroundColor: GOLD, paddingHorizontal: 12, paddingVertical: 6, borderRadius: 8 },
-  unlockTagText: { color: BLACK, fontSize: 11, fontWeight: '800' },
-  disclaimer: { color: '#444', fontSize: 11, textAlign: 'center', marginTop: 20 },
-  memberHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingTop: 20, gap: 8 },
-  memberTitle: { color: GOLD, fontSize: 18, fontWeight: '800', letterSpacing: 1 },
-  todayContent: { color: '#CCC', fontSize: 15, textAlign: 'center', marginTop: 6 },
-  newRelease: { color: GOLD, fontSize: 13, textAlign: 'center', marginBottom: 20, marginTop: 4 },
-  capperRow: {
-    flexDirection: 'row', alignItems: 'center', backgroundColor: CARD,
-    borderRadius: 12, marginHorizontal: 16, marginBottom: 12, padding: 14,
-  },
+  unlockTagText: { color: BLACK, fontSize: 11, fontFamily: 'Oswald_700Bold' },
+  trustBar: { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: CARD, borderRadius: 10, padding: 14, width: '100%', marginTop: 8, marginBottom: 16, borderWidth: 1, borderColor: '#2A2A2A' },
+  trustText: { color: '#AAA', fontSize: 13, fontFamily: 'Oswald_400Regular' },
+  disclaimer: { color: '#444', fontSize: 11, textAlign: 'center', fontFamily: 'Oswald_400Regular' },
+  memberHero: { flexDirection: 'row', alignItems: 'center', backgroundColor: CARD, borderRadius: 16, margin: 16, padding: 16, borderWidth: 1, borderColor: '#2A2A2A' },
+  trophyBox: { width: 52, height: 52, borderRadius: 12, backgroundColor: 'rgba(201,162,39,0.12)', alignItems: 'center', justifyContent: 'center' },
+  memberTitle: { color: '#FFF', fontSize: 18, fontFamily: 'Oswald_700Bold' },
+  memberSubtitle: { color: '#888', fontSize: 12, fontFamily: 'Oswald_400Regular', marginTop: 2 },
+  releaseBadge: { flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: GOLD, borderRadius: 6, paddingHorizontal: 8, paddingVertical: 4, marginTop: 8, alignSelf: 'flex-start' },
+  releaseText: { color: BLACK, fontSize: 11, fontFamily: 'Oswald_700Bold' },
+  sectionRow: { flexDirection: 'row', alignItems: 'center', marginHorizontal: 16, marginBottom: 12, gap: 8 },
+  sectionAccent: { width: 3, height: 16, backgroundColor: GOLD, borderRadius: 2 },
+  sectionLabelWhite: { color: '#FFF', fontSize: 12, fontFamily: 'Oswald_700Bold', letterSpacing: 1, flex: 1 },
+  seeAll: { color: GOLD, fontSize: 12, fontFamily: 'Oswald_400Regular' },
+  capperRow: { flexDirection: 'row', alignItems: 'center', backgroundColor: CARD, borderRadius: 12, marginHorizontal: 16, marginBottom: 12, padding: 14, borderWidth: 1, borderColor: '#2A2A2A' },
   rowAvatar: { width: 52, height: 52, borderRadius: 26, borderWidth: 2, borderColor: GOLD },
-  rowName: { color: '#FFF', fontSize: 14, fontWeight: '700' },
-  rowStat: { color: GOLD, fontSize: 12, marginTop: 2 },
-  viewBtn: { backgroundColor: GOLD, paddingHorizontal: 14, paddingVertical: 8, borderRadius: 8 },
-  viewBtnText: { color: BLACK, fontSize: 12, fontWeight: '700' },
+  rowName: { color: '#FFF', fontSize: 14, fontFamily: 'Oswald_700Bold' },
+  rowStat: { color: GOLD, fontSize: 12, marginTop: 2, fontFamily: 'Oswald_400Regular' },
+  viewBtn: { borderWidth: 1, borderColor: GOLD, paddingHorizontal: 14, paddingVertical: 8, borderRadius: 8 },
+  viewBtnText: { color: GOLD, fontSize: 12, fontFamily: 'Oswald_700Bold' },
+  trustBarMember: { flexDirection: 'row', alignItems: 'center', backgroundColor: CARD, borderRadius: 12, marginHorizontal: 16, padding: 14, gap: 12, borderWidth: 1, borderColor: '#2A2A2A' },
+  trustBarIcon: { width: 40, height: 40, borderRadius: 20, backgroundColor: 'rgba(201,162,39,0.12)', alignItems: 'center', justifyContent: 'center' },
+  trustBarTitle: { color: '#FFF', fontSize: 14, fontFamily: 'Oswald_700Bold' },
+  trustBarSub: { color: '#666', fontSize: 11, fontFamily: 'Oswald_400Regular', marginTop: 2 },
   modalContainer: { flex: 1, backgroundColor: BLACK },
   backBtn: { flexDirection: 'row', alignItems: 'center', padding: 16, gap: 8 },
-  backText: { color: GOLD, fontSize: 15, fontWeight: '600' },
+  backText: { color: GOLD, fontSize: 15, fontFamily: 'Oswald_400Regular' },
   cardHeader: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 20, paddingBottom: 12, paddingTop: 4 },
   cardAvatar: { width: 64, height: 64, borderRadius: 32, borderWidth: 2, borderColor: GOLD },
-  cardName: { color: '#FFF', fontSize: 18, fontWeight: '800' },
-  cardHandle: { color: '#888', fontSize: 12, marginTop: 2 },
-  cardRecord: { color: GOLD, fontSize: 13, marginTop: 4 },
-  cardDate: { color: '#666', fontSize: 12, paddingHorizontal: 20, marginBottom: 12 },
+  cardName: { color: '#FFF', fontSize: 18, fontFamily: 'Oswald_700Bold' },
+  cardHandle: { color: '#888', fontSize: 12, marginTop: 2, fontFamily: 'Oswald_400Regular' },
+  cardRecord: { color: GOLD, fontSize: 13, marginTop: 4, fontFamily: 'Oswald_400Regular' },
+  cardDate: { color: '#666', fontSize: 12, paddingHorizontal: 20, marginBottom: 12, fontFamily: 'Oswald_400Regular' },
   playCard: { backgroundColor: CARD, borderRadius: 12, marginHorizontal: 16, marginBottom: 14, padding: 16 },
   topPlayCard: { borderWidth: 1, borderColor: GOLD },
   playLabelRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 8 },
   starIcon: { fontSize: 14 },
-  playLabel: { color: GOLD, fontSize: 11, fontWeight: '700', letterSpacing: 1, flex: 1 },
-  playSport: { color: '#888', fontSize: 11 },
+  playLabel: { color: GOLD, fontSize: 11, fontFamily: 'Oswald_700Bold', letterSpacing: 1, flex: 1 },
+  playSport: { color: '#888', fontSize: 11, fontFamily: 'Oswald_400Regular' },
   playPickRow: { flexDirection: 'row', alignItems: 'baseline', marginBottom: 10 },
-  playPick: { color: '#FFF', fontSize: 20, fontWeight: '800', flex: 1 },
-  playLine: { color: GOLD, fontSize: 16, fontWeight: '700' },
+  playPick: { color: '#FFF', fontSize: 20, fontFamily: 'Oswald_700Bold', flex: 1 },
+  playLine: { color: GOLD, fontSize: 16, fontFamily: 'Oswald_700Bold' },
   confRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 10 },
-  confLabel: { color: '#888', fontSize: 11, width: 80 },
+  confLabel: { color: '#888', fontSize: 11, width: 80, fontFamily: 'Oswald_400Regular' },
   confBarBg: { flex: 1, height: 6, backgroundColor: '#2A2A2A', borderRadius: 3, marginHorizontal: 8 },
   confBarFill: { height: 6, backgroundColor: GOLD, borderRadius: 3 },
-  confValue: { color: GOLD, fontSize: 11, width: 36, textAlign: 'right' },
-  analysisToggle: {
-    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-    backgroundColor: '#222', borderRadius: 8, padding: 10, marginBottom: 8,
-  },
-  analysisLabel: { color: '#CCC', fontSize: 13 },
-  analysisText: { color: '#AAA', fontSize: 13, lineHeight: 20 },
+  confValue: { color: GOLD, fontSize: 11, width: 36, textAlign: 'right', fontFamily: 'Oswald_400Regular' },
+  analysisToggle: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: '#222', borderRadius: 8, padding: 10, marginBottom: 8 },
+  analysisLabel: { color: '#CCC', fontSize: 13, fontFamily: 'Oswald_400Regular' },
+  analysisText: { color: '#AAA', fontSize: 13, lineHeight: 20, fontFamily: 'Oswald_400Regular' },
+  unlockContainer: { alignItems: 'center', paddingHorizontal: 24, paddingTop: 20 },
+  unlockAvatar: { width: 80, height: 80, borderRadius: 40, borderWidth: 2, borderColor: GOLD, marginBottom: 14 },
+  unlockTitle: { color: GOLD, fontSize: 22, fontFamily: 'Oswald_700Bold', letterSpacing: 1 },
+  unlockSub: { color: '#AAA', fontSize: 14, marginTop: 6, fontFamily: 'Oswald_400Regular' },
+  unlockRecord: { color: '#666', fontSize: 12, marginTop: 4, marginBottom: 24, fontFamily: 'Oswald_400Regular' },
+  lockedPickRow: { flexDirection: 'row', alignItems: 'center', backgroundColor: LOCKED, width: '100%', borderRadius: 10, padding: 16, marginBottom: 10, gap: 10 },
+  lockedPickText: { color: '#555', fontSize: 14, fontFamily: 'Oswald_400Regular' },
+  unlockCta: { color: '#FFF', fontSize: 17, fontFamily: 'Oswald_700Bold', textAlign: 'center', marginTop: 24 },
+  unlockSubCta: { color: '#888', fontSize: 13, textAlign: 'center', marginTop: 6, marginBottom: 20, fontFamily: 'Oswald_400Regular' },
+  pkgBtn: { backgroundColor: GOLD, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', width: '100%', paddingVertical: 16, paddingHorizontal: 20, borderRadius: 10, marginBottom: 12 },
+  pkgBtnInner: { flexDirection: 'column' },
+  pkgLabel: { color: BLACK, fontSize: 11, fontFamily: 'Oswald_700Bold', letterSpacing: 1 },
+  pkgPrice: { color: BLACK, fontSize: 20, fontFamily: 'Oswald_700Bold', marginTop: 2 },
+  pkgSub: { fontSize: 12, fontFamily: 'Oswald_400Regular' },
   resultBadge: { alignSelf: 'flex-start', borderRadius: 6, paddingHorizontal: 12, paddingVertical: 4, marginTop: 10 },
   winBadge: { backgroundColor: '#1A4A1A' },
   lossBadge: { backgroundColor: '#4A1A1A' },
-  resultText: { color: '#FFF', fontWeight: '700', fontSize: 12 },
-  unlockContainer: { alignItems: 'center', paddingHorizontal: 24, paddingTop: 20 },
-  unlockAvatar: { width: 80, height: 80, borderRadius: 40, borderWidth: 2, borderColor: GOLD, marginBottom: 14 },
-  unlockTitle: { color: GOLD, fontSize: 22, fontWeight: '800', letterSpacing: 1 },
-  unlockSub: { color: '#AAA', fontSize: 14, marginTop: 6 },
-  unlockRecord: { color: '#666', fontSize: 12, marginTop: 4, marginBottom: 24 },
-  lockedPickRow: {
-    flexDirection: 'row', alignItems: 'center', backgroundColor: LOCKED,
-    width: '100%', borderRadius: 10, padding: 16, marginBottom: 10, gap: 10,
-  },
-  lockedPickText: { color: '#555', fontSize: 14 },
-  unlockCta: { color: '#FFF', fontSize: 17, fontWeight: '700', textAlign: 'center', marginTop: 24 },
-  unlockSubCta: { color: '#888', fontSize: 13, textAlign: 'center', marginTop: 6, marginBottom: 20 },
-  pkgBtn: {
-    backgroundColor: GOLD, flexDirection: 'row', alignItems: 'center',
-    justifyContent: 'space-between', width: '100%',
-    paddingVertical: 16, paddingHorizontal: 20, borderRadius: 10, marginBottom: 12,
-  },
-  pkgBtnInner: { flexDirection: 'column' },
-  pkgLabel: { color: BLACK, fontSize: 11, fontWeight: '700', letterSpacing: 1 },
-  pkgPrice: { color: BLACK, fontSize: 20, fontWeight: '800', marginTop: 2 },
-  pkgSub: { fontSize: 12, fontWeight: '400' },
+  resultText: { color: '#FFF', fontFamily: 'Oswald_700Bold', fontSize: 12 },
 });
