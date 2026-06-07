@@ -1,18 +1,16 @@
 import React, { useState } from 'react';
 import {
   View, Text, StyleSheet, ScrollView,
-  TouchableOpacity, Image, Modal, SafeAreaView, Dimensions
+  TouchableOpacity, Image, Modal, SafeAreaView, Dimensions, Alert
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import Purchases from 'react-native-purchases';
 
 const GOLD = '#C9A227';
 const BLACK = '#0A0A0A';
 const CARD = '#1A1A1A';
 const LOCKED = '#111111';
 const SCREEN_WIDTH = Dimensions.get('window').width;
-
-const USER_IS_VIP = false;
-const USER_SUBSCRIPTIONS: string[] = [];
 
 const CAPPERS = [
   {
@@ -24,9 +22,9 @@ const CAPPERS = [
     winRate: '70.2%',
     lastTen: '6-4 Last 10',
     packages: [
-      { label: 'Daily', price: '$24.99', sub: '/day' },
-      { label: 'Weekly', price: '$99.99', sub: '/week' },
-      { label: 'Monthly', price: '$299.00', sub: '/month' },
+      { label: 'Daily', price: '$24.99', sub: '/day', productId: 'juice.ai.day' },
+      { label: 'Weekly', price: '$99.99', sub: '/week', productId: 'juice.ai.day' },
+      { label: 'Monthly', price: '$299.00', sub: '/month', productId: 'juice.ai.day' },
     ],
     card: {
       date: 'June 6, 2026',
@@ -45,9 +43,9 @@ const CAPPERS = [
     winRate: '64.3%',
     lastTen: '8-2 Last 10',
     packages: [
-      { label: 'Daily', price: '$19.99', sub: '/day' },
-      { label: 'Weekly', price: '$79.99', sub: '/week' },
-      { label: 'Monthly', price: '$199.00', sub: '/month' },
+      { label: 'Daily', price: '$19.99', sub: '/day', productId: 'juice.ai.day' },
+      { label: 'Weekly', price: '$79.99', sub: '/week', productId: 'juice.ai.day' },
+      { label: 'Monthly', price: '$199.00', sub: '/month', productId: 'juice.ai.day' },
     ],
     card: {
       date: 'June 6, 2026',
@@ -65,9 +63,9 @@ const CAPPERS = [
     winRate: '65.2%',
     lastTen: '7-3 Last 10',
     packages: [
-      { label: 'Daily', price: '$14.99', sub: '/day' },
-      { label: 'Weekly', price: '$69.99', sub: '/week' },
-      { label: 'Monthly', price: '$149.00', sub: '/month' },
+      { label: 'Daily', price: '$14.99', sub: '/day', productId: 'juice.ai.day' },
+      { label: 'Weekly', price: '$69.99', sub: '/week', productId: 'juice.ai.day' },
+      { label: 'Monthly', price: '$149.00', sub: '/month', productId: 'juice.ai.day' },
     ],
     card: {
       date: 'June 6, 2026',
@@ -81,9 +79,8 @@ const CAPPERS = [
 export default function VIPScreen() {
   const [selectedCapper, setSelectedCapper] = useState<(typeof CAPPERS)[0] | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
-
-  const isVip = USER_IS_VIP;
-  const isSubscribed = (id: string) => USER_SUBSCRIPTIONS.includes(id);
+  const [isVip, setIsVip] = useState(false);
+  const [purchasing, setPurchasing] = useState<string | null>(null);
 
   const handleCapperPress = (capper: (typeof CAPPERS)[0]) => {
     setSelectedCapper(capper);
@@ -93,6 +90,30 @@ export default function VIPScreen() {
   const closeModal = () => {
     setModalVisible(false);
     setSelectedCapper(null);
+  };
+
+  const handlePurchase = async (productId: string, label: string) => {
+    try {
+      setPurchasing(productId + label);
+      const products = await Purchases.getProducts([productId]);
+      if (!products || products.length === 0) {
+        Alert.alert(
+          'Almost Ready',
+          'Purchase flow is set up and ready. A real store connection is needed to process payments.'
+        );
+        return;
+      }
+      await Purchases.purchaseStoreProduct(products[0]);
+      setIsVip(true);
+      closeModal();
+      Alert.alert('Welcome to VIP!', 'You now have full access to all picks.');
+    } catch (e: any) {
+      if (!e.userCancelled) {
+        Alert.alert('Purchase Failed', e.message || 'Something went wrong. Please try again.');
+      }
+    } finally {
+      setPurchasing(null);
+    }
   };
 
   const renderConfidenceBar = (confidence: number) => {
@@ -139,10 +160,10 @@ export default function VIPScreen() {
                   <Text style={styles.playLine}>{play.line}</Text>
                 </View>
                 {renderConfidenceBar(play.confidence)}
-                <TouchableOpacity style={styles.analysisToggle}>
+                <View style={styles.analysisToggle}>
                   <Text style={styles.analysisLabel}>Analysis</Text>
                   <Ionicons name="chevron-down" size={16} color={GOLD} />
-                </TouchableOpacity>
+                </View>
                 <Text style={styles.analysisText}>{play.analysis}</Text>
               </View>
             ))}
@@ -176,10 +197,18 @@ export default function VIPScreen() {
               <Text style={styles.unlockCta}>Unlock {selectedCapper.name}'s Premium Package</Text>
               <Text style={styles.unlockSubCta}>Get instant access to all picks, analysis, and alerts.</Text>
               {selectedCapper.packages.map((pkg) => (
-                <TouchableOpacity key={pkg.label} style={styles.pkgBtn}>
+                <TouchableOpacity
+                  key={pkg.label}
+                  style={[styles.pkgBtn, purchasing === pkg.productId + pkg.label && { opacity: 0.6 }]}
+                  onPress={() => handlePurchase(pkg.productId, pkg.label)}
+                  disabled={!!purchasing}
+                >
                   <View style={styles.pkgBtnInner}>
                     <Text style={styles.pkgLabel}>{pkg.label.toUpperCase()}</Text>
-                    <Text style={styles.pkgPrice}>{pkg.price}<Text style={styles.pkgSub}>{pkg.sub}</Text></Text>
+                    <Text style={styles.pkgPrice}>
+                      {purchasing === pkg.productId + pkg.label ? 'Processing...' : pkg.price}
+                      <Text style={styles.pkgSub}>{pkg.sub}</Text>
+                    </Text>
                   </View>
                   <Ionicons name="lock-open-outline" size={18} color={BLACK} />
                 </TouchableOpacity>
@@ -196,21 +225,12 @@ export default function VIPScreen() {
     return (
       <SafeAreaView style={styles.container}>
         <ScrollView contentContainerStyle={styles.lockedPage}>
-
-          {/* VIP LOCKED IMAGE — FULL SCREEN WIDTH */}
           <Image
             source={require('../assets/vip-locked.png')}
-            style={{
-              width: SCREEN_WIDTH,
-              height: SCREEN_WIDTH,
-              resizeMode: 'contain',
-              marginBottom: 8,
-            }}
+            style={{ width: SCREEN_WIDTH, height: SCREEN_WIDTH, resizeMode: 'contain', marginBottom: 8 }}
           />
-
           <Text style={styles.lockTitle}>VIP ACCESS</Text>
           <Text style={styles.lockTagline}>Premium Picks.{'\n'}Verified Records.{'\n'}Real-Time Alerts.</Text>
-
           <View style={styles.benefitsGrid}>
             {[
               { icon: 'calendar-outline', title: 'Daily Premium Plays', sub: 'Expert-curated picks\nupdated daily' },
@@ -229,9 +249,7 @@ export default function VIPScreen() {
               </View>
             ))}
           </View>
-
           <Text style={styles.sectionLabel}>SELECT A CAPPER TO UNLOCK</Text>
-
           {CAPPERS.map((capper) => (
             <TouchableOpacity key={capper.id} style={styles.lockedCapperCard} onPress={() => handleCapperPress(capper)}>
               <Image source={capper.image} style={styles.lockedCapperAvatar} />
@@ -245,7 +263,6 @@ export default function VIPScreen() {
               </View>
             </TouchableOpacity>
           ))}
-
           <View style={styles.trustBar}>
             <Ionicons name="shield-checkmark-outline" size={18} color={GOLD} />
             <Text style={styles.trustText}>Secure. Verified. Trusted.</Text>
@@ -257,22 +274,13 @@ export default function VIPScreen() {
     );
   }
 
-  // MEMBER VIEW
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={{ paddingBottom: 40 }}>
-
-        {/* HERO — crown image takes full width above the card */}
         <Image
           source={require('../assets/vip-crown.png')}
-          style={{
-            width: SCREEN_WIDTH,
-            height: SCREEN_WIDTH * 0.7,
-            resizeMode: 'contain',
-            marginBottom: -20,
-          }}
+          style={{ width: SCREEN_WIDTH, height: SCREEN_WIDTH * 0.7, resizeMode: 'contain', marginBottom: -20 }}
         />
-
         <View style={styles.memberHero}>
           <View style={styles.trophyBox}>
             <Ionicons name="trophy" size={28} color={GOLD} />
@@ -286,7 +294,6 @@ export default function VIPScreen() {
             </View>
           </View>
         </View>
-
         <View style={styles.sectionRow}>
           <View style={styles.sectionAccent} />
           <Text style={styles.sectionLabelWhite}>TODAY'S TOP VIP PICKS</Text>
@@ -294,7 +301,6 @@ export default function VIPScreen() {
             <Text style={styles.seeAll}>See all picks →</Text>
           </TouchableOpacity>
         </View>
-
         {CAPPERS.map((capper) => (
           <TouchableOpacity key={capper.id} style={styles.capperRow} onPress={() => handleCapperPress(capper)}>
             <Image source={capper.image} style={styles.rowAvatar} />
@@ -307,7 +313,6 @@ export default function VIPScreen() {
             </TouchableOpacity>
           </TouchableOpacity>
         ))}
-
         <View style={styles.trustBarMember}>
           <View style={styles.trustBarIcon}>
             <Ionicons name="shield-checkmark-outline" size={20} color={GOLD} />
@@ -318,9 +323,8 @@ export default function VIPScreen() {
           </View>
           <Ionicons name="chevron-forward" size={18} color="#555" />
         </View>
-
       </ScrollView>
-      {selectedCapper && (isSubscribed(selectedCapper.id) ? renderPickCard() : renderUnlockCard())}
+      {selectedCapper && renderPickCard()}
     </SafeAreaView>
   );
 }
@@ -406,8 +410,4 @@ const styles = StyleSheet.create({
   pkgLabel: { color: BLACK, fontSize: 11, fontFamily: 'Oswald_700Bold', letterSpacing: 1 },
   pkgPrice: { color: BLACK, fontSize: 20, fontFamily: 'Oswald_700Bold', marginTop: 2 },
   pkgSub: { fontSize: 12, fontFamily: 'Oswald_400Regular' },
-  resultBadge: { alignSelf: 'flex-start', borderRadius: 6, paddingHorizontal: 12, paddingVertical: 4, marginTop: 10 },
-  winBadge: { backgroundColor: '#1A4A1A' },
-  lossBadge: { backgroundColor: '#4A1A1A' },
-  resultText: { color: '#FFF', fontFamily: 'Oswald_700Bold', fontSize: 12 },
 });
