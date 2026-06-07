@@ -3,7 +3,7 @@ import {
   View, Text, StyleSheet, ScrollView,
   TouchableOpacity, Image, ActivityIndicator, RefreshControl
 } from 'react-native';
-import { collection, query, orderBy, onSnapshot } from 'firebase/firestore';
+import { collection, query, orderBy, onSnapshot, where } from 'firebase/firestore';
 import { db } from '../firebaseConfig';
 
 const GOLD = '#C9A227';
@@ -25,6 +25,7 @@ export default function FeedScreen() {
   useEffect(() => {
     const q = query(
       collection(db, 'posts'),
+      where('destination', 'in', ['public', 'both']),
       orderBy('createdAt', 'desc')
     );
 
