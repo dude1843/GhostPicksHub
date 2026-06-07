@@ -79,7 +79,7 @@ const CAPPERS = [
 export default function VIPScreen() {
   const [selectedCapper, setSelectedCapper] = useState<(typeof CAPPERS)[0] | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
-  const [isVip, setIsVip] = useState(false);
+  const [isVip, setIsVip] = useState(true);
   const [purchasing, setPurchasing] = useState<string | null>(null);
 
   const handleCapperPress = (capper: (typeof CAPPERS)[0]) => {
