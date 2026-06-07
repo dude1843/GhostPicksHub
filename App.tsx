@@ -15,6 +15,7 @@ import StatsScreen from './Screens/StatsScreen';
 import ProfileScreen from './Screens/ProfileScreen';
 import LoginScreen from './Screens/LoginScreen';
 import SignupScreen from './Screens/SignupScreen';
+import SettingsScreen from './Screens/SettingsScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -43,9 +44,7 @@ function CustomTabBar({ state, navigation }: any) {
             onPress={() => navigation.navigate(route.name)}
             activeOpacity={0.8}
           >
-            {/* Gold top line on active */}
             {isFocused && <View style={styles.activeTopLine} />}
-
             <Ionicons
               name={tab.icon as any}
               size={22}
@@ -96,10 +95,10 @@ export default function App() {
     Oswald_700Bold,
   });
 
-useEffect(() => {
-  checkLoginStatus();
-  Purchases.configure({ apiKey: 'test_aHFTqrtPpcjtpqKWywyOoQROAFo' });
-}, []);
+  useEffect(() => {
+    checkLoginStatus();
+    Purchases.configure({ apiKey: 'test_aHFTqrtPpcjtpqKWywyOoQROAFo' });
+  }, []);
 
   const checkLoginStatus = async () => {
     try {
@@ -138,9 +137,12 @@ useEffect(() => {
               </Stack.Screen>
             </>
           ) : (
-            <Stack.Screen name="Main">
-              {(props) => <MainTabs {...props} onLogout={handleLogout} />}
-            </Stack.Screen>
+            <>
+              <Stack.Screen name="Main">
+                {(props) => <MainTabs {...props} onLogout={handleLogout} />}
+              </Stack.Screen>
+              <Stack.Screen name="Settings" component={SettingsScreen} />
+            </>
           )}
         </Stack.Navigator>
       </NavigationContainer>

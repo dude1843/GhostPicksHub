@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import {
   View, Text, StyleSheet, TouchableOpacity,
-  Alert, ScrollView
+  Alert, ScrollView, Linking
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
@@ -55,12 +55,54 @@ export default function ProfileScreen({ onLogout, navigation }: { onLogout?: () 
     ]);
   };
 
+  const accountItems = [
+    {
+      icon: 'mail-outline',
+      label: 'Email Address',
+      value: email,
+      onPress: null,
+      upgrade: false,
+      noChevron: true,
+    },
+    {
+      icon: 'shield-checkmark-outline',
+      label: 'Subscription Status',
+      value: 'Free',
+      onPress: null,
+      upgrade: true,
+      noChevron: false,
+    },
+    {
+      icon: 'headset-outline',
+      label: 'Support',
+      value: 'ghostpicksats.com/contact',
+      onPress: () => Linking.openURL('https://www.ghostpicksats.com/contact'),
+      upgrade: false,
+      noChevron: false,
+    },
+    {
+      icon: 'card-outline',
+      label: 'Payment Methods',
+      value: 'Manage your payment methods',
+      onPress: null,
+      upgrade: false,
+      noChevron: false,
+    },
+    {
+      icon: 'settings-outline',
+      label: 'Settings',
+      value: 'Notifications, disclaimers, preferences',
+      onPress: () => navigation?.getParent()?.navigate('Settings'),
+      upgrade: false,
+      noChevron: false,
+    },
+  ];
+
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
 
-      {/* Header */}
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>PROFILE</Text>
+        <Text style={styles.headerTitle}>Profile</Text>
         <TouchableOpacity
           style={styles.bellButton}
           onPress={() => Alert.alert('Notifications', 'No new notifications.')}
@@ -70,7 +112,6 @@ export default function ProfileScreen({ onLogout, navigation }: { onLogout?: () 
         </TouchableOpacity>
       </View>
 
-      {/* User Card */}
       <View style={styles.userCard}>
         <View style={styles.avatarRow}>
           <View style={styles.avatarWrapper}>
@@ -98,7 +139,6 @@ export default function ProfileScreen({ onLogout, navigation }: { onLogout?: () 
         </View>
       </View>
 
-      {/* Go Premium Banner */}
       <View style={styles.premiumBanner}>
         <View style={styles.premiumLeft}>
           <View style={styles.crownCircle}>
@@ -117,21 +157,18 @@ export default function ProfileScreen({ onLogout, navigation }: { onLogout?: () 
         </TouchableOpacity>
       </View>
 
-      {/* Account Section */}
       <View style={styles.sectionRow}>
         <View style={styles.sectionAccent} />
         <Text style={styles.sectionLabel}>ACCOUNT</Text>
       </View>
       <View style={styles.section}>
-        {[
-          { icon: 'mail-outline', label: 'Email Address', value: email },
-          { icon: 'shield-checkmark-outline', label: 'Subscription Status', value: 'Free', upgrade: true },
-          { icon: 'headset-outline', label: 'Support', value: 'ghostpicksats.com/contact' },
-          { icon: 'card-outline', label: 'Payment Methods', value: 'Manage your payment methods' },
-          { icon: 'settings-outline', label: 'Settings', value: 'Notifications, disclaimers, preferences' },
-        ].map((item, i, arr) => (
+        {accountItems.map((item, i, arr) => (
           <View key={item.label}>
-            <View style={styles.row}>
+            <TouchableOpacity
+              style={styles.row}
+              onPress={item.onPress || undefined}
+              disabled={!item.onPress && !item.upgrade}
+            >
               <Ionicons name={item.icon as any} size={20} color={GOLD} style={styles.rowIcon} />
               <View style={styles.rowText}>
                 <Text style={styles.rowLabel}>{item.label}</Text>
@@ -144,16 +181,15 @@ export default function ProfileScreen({ onLogout, navigation }: { onLogout?: () 
                 >
                   <Text style={styles.upgradeText}>Upgrade</Text>
                 </TouchableOpacity>
-              ) : (
+              ) : item.noChevron ? null : (
                 <Ionicons name="chevron-forward" size={18} color="#444" />
               )}
-            </View>
+            </TouchableOpacity>
             {i < arr.length - 1 && <View style={styles.divider} />}
           </View>
         ))}
       </View>
 
-      {/* Activity Section */}
       <View style={styles.sectionRow}>
         <View style={styles.sectionAccent} />
         <Text style={styles.sectionLabel}>ACTIVITY</Text>
@@ -173,7 +209,6 @@ export default function ProfileScreen({ onLogout, navigation }: { onLogout?: () 
         ))}
       </View>
 
-      {/* Log Out */}
       <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
         <Ionicons name="log-out-outline" size={20} color="#FF4444" />
         <Text style={styles.logoutText}>LOG OUT</Text>
@@ -194,25 +229,15 @@ const styles = StyleSheet.create({
     paddingTop: 60,
     paddingBottom: 16,
   },
-  headerTitle: {
-    color: '#FFF',
-    fontSize: 22,
-    fontFamily: 'Oswald_700Bold',
-    letterSpacing: 1,
-  },
+  headerTitle: { color: '#FFF', fontSize: 24, fontWeight: '700' },
   bellButton: { position: 'relative' },
   bellDot: {
     position: 'absolute', top: 0, right: 0,
     width: 8, height: 8, borderRadius: 4, backgroundColor: GOLD,
   },
   userCard: {
-    marginHorizontal: 16,
-    backgroundColor: CARD,
-    borderRadius: 16,
-    padding: 16,
-    marginBottom: 14,
-    borderWidth: 1,
-    borderColor: '#2A2A2A',
+    marginHorizontal: 16, backgroundColor: CARD, borderRadius: 16,
+    padding: 16, marginBottom: 14, borderWidth: 1, borderColor: '#2A2A2A',
   },
   avatarRow: { flexDirection: 'row', alignItems: 'center' },
   avatarWrapper: { position: 'relative', marginRight: 14 },
@@ -227,176 +252,69 @@ const styles = StyleSheet.create({
     width: 20, height: 20, alignItems: 'center', justifyContent: 'center',
   },
   userInfo: { flex: 1 },
-  userName: {
-    color: '#FFF',
-    fontSize: 18,
-    fontFamily: 'Oswald_700Bold',
-    marginBottom: 2,
-  },
-  memberSince: {
-    color: GOLD,
-    fontSize: 12,
-    fontFamily: 'Oswald_400Regular',
-    marginBottom: 8,
-  },
+  userName: { color: '#FFF', fontSize: 18, fontWeight: '600', marginBottom: 2 },
+  memberSince: { color: GOLD, fontSize: 12, marginBottom: 8 },
   badgeRow: { flexDirection: 'row' },
   badge: {
     flexDirection: 'row', alignItems: 'center', gap: 4,
     backgroundColor: '#2A2A2A', borderRadius: 12,
     paddingHorizontal: 10, paddingVertical: 4,
   },
-  badgeText: {
-    color: GOLD,
-    fontSize: 12,
-    fontFamily: 'Oswald_600SemiBold',
-  },
+  badgeText: { color: GOLD, fontSize: 12, fontWeight: '600' },
   editButton: {
     flexDirection: 'row', alignItems: 'center', gap: 4,
     borderWidth: 1, borderColor: GOLD, borderRadius: 8,
     paddingHorizontal: 10, paddingVertical: 6,
   },
-  editButtonText: {
-    color: GOLD,
-    fontSize: 12,
-    fontFamily: 'Oswald_400Regular',
-  },
+  editButtonText: { color: GOLD, fontSize: 12 },
   premiumBanner: {
-    marginHorizontal: 16,
-    backgroundColor: CARD,
-    borderRadius: 16,
-    padding: 16,
-    marginBottom: 24,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    borderWidth: 1,
-    borderColor: GOLD,
+    marginHorizontal: 16, backgroundColor: CARD, borderRadius: 16,
+    padding: 16, marginBottom: 24, flexDirection: 'row',
+    alignItems: 'center', justifyContent: 'space-between',
+    borderWidth: 1, borderColor: GOLD,
   },
   premiumLeft: { flexDirection: 'row', alignItems: 'center', gap: 12, flex: 1 },
   crownCircle: {
     width: 44, height: 44, borderRadius: 22,
     backgroundColor: '#2A2A2A', alignItems: 'center', justifyContent: 'center',
   },
-  premiumTitle: {
-    color: '#FFF',
-    fontSize: 15,
-    fontFamily: 'Oswald_700Bold',
-  },
-  premiumSub: {
-    color: '#888',
-    fontSize: 11,
-    fontFamily: 'Oswald_400Regular',
-    marginTop: 2,
-  },
-  premiumButton: {
-    backgroundColor: GOLD,
-    borderRadius: 10,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-  },
-  premiumButtonText: {
-    color: BLACK,
-    fontSize: 12,
-    fontFamily: 'Oswald_700Bold',
-  },
+  premiumTitle: { color: '#FFF', fontSize: 15, fontWeight: '600' },
+  premiumSub: { color: '#888', fontSize: 11, marginTop: 2 },
+  premiumButton: { backgroundColor: GOLD, borderRadius: 10, paddingHorizontal: 12, paddingVertical: 8 },
+  premiumButtonText: { color: BLACK, fontSize: 12, fontWeight: '700' },
   sectionRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginHorizontal: 16,
-    marginBottom: 10,
-    gap: 8,
+    flexDirection: 'row', alignItems: 'center',
+    marginHorizontal: 16, marginBottom: 10, gap: 8,
   },
-  sectionAccent: {
-    width: 3,
-    height: 16,
-    backgroundColor: GOLD,
-    borderRadius: 2,
-  },
-  sectionLabel: {
-    color: '#FFF',
-    fontSize: 12,
-    fontFamily: 'Oswald_700Bold',
-    letterSpacing: 1.5,
-  },
+  sectionAccent: { width: 3, height: 16, backgroundColor: GOLD, borderRadius: 2 },
+  sectionLabel: { color: '#FFF', fontSize: 11, fontWeight: '700', letterSpacing: 1.5 },
   section: {
-    marginHorizontal: 16,
-    backgroundColor: CARD,
-    borderRadius: 16,
-    marginBottom: 24,
-    overflow: 'hidden',
-    borderWidth: 1,
-    borderColor: '#2A2A2A',
+    marginHorizontal: 16, backgroundColor: CARD, borderRadius: 16,
+    marginBottom: 24, overflow: 'hidden', borderWidth: 1, borderColor: '#2A2A2A',
   },
-  row: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 14,
-  },
+  row: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 14 },
   rowIcon: { marginRight: 14 },
   rowText: { flex: 1 },
-  rowLabel: {
-    color: '#FFF',
-    fontSize: 14,
-    fontFamily: 'Oswald_400Regular',
-  },
-  rowValue: {
-    color: '#888',
-    fontSize: 12,
-    fontFamily: 'Oswald_400Regular',
-    marginTop: 2,
-  },
+  rowLabel: { color: '#FFF', fontSize: 15, fontWeight: '500' },
+  rowValue: { color: '#666', fontSize: 12, marginTop: 2 },
   divider: { height: 1, backgroundColor: '#2A2A2A', marginHorizontal: 16 },
   upgradeButton: {
-    borderWidth: 1,
-    borderColor: GOLD,
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
+    borderWidth: 1, borderColor: GOLD, borderRadius: 8,
+    paddingHorizontal: 12, paddingVertical: 6,
   },
-  upgradeText: {
-    color: GOLD,
-    fontSize: 12,
-    fontFamily: 'Oswald_600SemiBold',
-  },
+  upgradeText: { color: GOLD, fontSize: 12, fontWeight: '600' },
   activityRow: {
-    marginHorizontal: 16,
-    backgroundColor: CARD,
-    borderRadius: 16,
-    padding: 20,
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    marginBottom: 24,
-    borderWidth: 1,
-    borderColor: '#2A2A2A',
+    marginHorizontal: 16, backgroundColor: CARD, borderRadius: 16,
+    padding: 20, flexDirection: 'row', justifyContent: 'space-around',
+    marginBottom: 24, borderWidth: 1, borderColor: '#2A2A2A',
   },
   activityItem: { alignItems: 'center', gap: 6 },
-  activityCount: {
-    color: '#FFF',
-    fontSize: 18,
-    fontFamily: 'Oswald_700Bold',
-  },
-  activityLabel: {
-    color: '#888',
-    fontSize: 11,
-    fontFamily: 'Oswald_400Regular',
-  },
+  activityCount: { color: '#FFF', fontSize: 18, fontWeight: '700' },
+  activityLabel: { color: '#888', fontSize: 11 },
   logoutButton: {
-    marginHorizontal: 16,
-    backgroundColor: CARD,
-    borderRadius: 16,
-    padding: 18,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 10,
-    borderWidth: 1,
-    borderColor: '#FF4444',
+    marginHorizontal: 16, backgroundColor: CARD, borderRadius: 16,
+    padding: 18, flexDirection: 'row', alignItems: 'center',
+    justifyContent: 'center', gap: 10, borderWidth: 1, borderColor: '#FF4444',
   },
-  logoutText: {
-    color: '#FF4444',
-    fontSize: 16,
-    fontFamily: 'Oswald_700Bold',
-    letterSpacing: 1,
-  },
+  logoutText: { color: '#FF4444', fontSize: 15, fontWeight: '700', letterSpacing: 1 },
 });
