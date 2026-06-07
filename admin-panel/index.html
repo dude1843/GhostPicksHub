@@ -23,9 +23,9 @@
       padding: 24px;
     }
     #loginGate img {
-      height: 200px;
+      width: 340px;
       object-fit: contain;
-      margin-bottom: 8px;
+      margin-bottom: 24px;
     }
     #loginGate h1 {
       color: #C9A227;
@@ -78,6 +78,7 @@
       justify-content: space-between;
     }
     .header-left { display: flex; align-items: center; gap: 14px; }
+    .header-logo { height: 50px; object-fit: contain; }
     .header h1 {
       color: #C9A227;
       font-size: 22px;
@@ -256,7 +257,7 @@
 <body>
 
 <div id="loginGate">
-  <img src="../assets/logo.png" alt="Ghost Picks" />
+  <img src="logo-admin.png" alt="Ghost Picks" />
   <h1>ADMIN ACCESS</h1>
   <p>Enter your password to continue</p>
   <input type="password" id="passwordInput" placeholder="••••••••" onkeydown="if(event.key==='Enter') checkPassword()" />
@@ -267,7 +268,7 @@
 <div id="mainPanel">
   <div class="header">
     <div class="header-left">
-      <img src="../assets/logo.png" style="height: 50px; object-fit: contain;" />
+      <img src="logo-admin.png" class="header-logo" alt="Ghost Picks" />
       <div>
         <h1>GHOST PICKS ADMIN</h1>
         <span>Post picks and promos to the live feed</span>
