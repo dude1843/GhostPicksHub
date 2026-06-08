@@ -166,6 +166,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     letterSpacing: 3,
     marginBottom: 30,
+    fontFamily: 'Inter_700Bold',
   },
   input: {
     width: '100%',
@@ -178,6 +179,7 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     fontSize: 16,
     marginBottom: 14,
+    fontFamily: 'Inter_400Regular',
   },
   checkRow: {
     flexDirection: 'row',
@@ -203,13 +205,14 @@ const styles = StyleSheet.create({
   checkmark: {
     color: '#0A0A0A',
     fontSize: 14,
-    fontWeight: 'bold',
+    fontFamily: 'Inter_700Bold',
   },
   checkText: {
     color: '#AAAAAA',
     fontSize: 13,
     flex: 1,
     lineHeight: 20,
+    fontFamily: 'Inter_400Regular',
   },
   button: {
     width: '100%',
@@ -226,21 +229,23 @@ const styles = StyleSheet.create({
   buttonText: {
     color: '#0A0A0A',
     fontSize: 16,
-    fontWeight: 'bold',
+    fontFamily: 'Inter_700Bold',
     letterSpacing: 2,
   },
   loginLink: {
     color: '#666',
     fontSize: 14,
     marginBottom: 30,
+    fontFamily: 'Inter_400Regular',
   },
   loginLinkBold: {
     color: '#C9A227',
-    fontWeight: 'bold',
+    fontFamily: 'Inter_700Bold',
   },
   disclaimer: {
     color: '#444',
     fontSize: 11,
     textAlign: 'center',
+    fontFamily: 'Inter_400Regular',
   },
 });

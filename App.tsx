@@ -5,7 +5,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useFonts, Oswald_400Regular, Oswald_700Bold, Oswald_600SemiBold } from '@expo-google-fonts/oswald';
+import { useFonts, Inter_400Regular, Inter_600SemiBold, Inter_700Bold } from '@expo-google-fonts/inter';
 import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
 import Purchases from 'react-native-purchases';
 import FeedScreen from './Screens/FeedScreen';
@@ -68,7 +68,7 @@ function MainTabs({ onLogout }: { onLogout: () => void }) {
         headerStyle: { backgroundColor: BLACK },
         headerTintColor: GOLD,
         headerTitleStyle: {
-          fontFamily: 'Oswald_700Bold',
+          fontFamily: 'Inter_700Bold',
           fontSize: 18,
           letterSpacing: 1,
         },
@@ -90,9 +90,9 @@ export default function App() {
   const [loading, setLoading] = useState(true);
 
   const [fontsLoaded] = useFonts({
-    Oswald_400Regular,
-    Oswald_600SemiBold,
-    Oswald_700Bold,
+    Inter_400Regular,
+    Inter_600SemiBold,
+    Inter_700Bold,
   });
 
   useEffect(() => {
@@ -185,11 +185,11 @@ const styles = StyleSheet.create({
   tabLabel: {
     color: '#555',
     fontSize: 10,
-    fontFamily: 'Oswald_400Regular',
+    fontFamily: 'Inter_400Regular',
     letterSpacing: 0.5,
   },
   tabLabelActive: {
     color: GOLD,
-    fontFamily: 'Oswald_700Bold',
+    fontFamily: 'Inter_700Bold',
   },
 });

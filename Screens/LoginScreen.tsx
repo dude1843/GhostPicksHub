@@ -154,7 +154,7 @@ const styles = StyleSheet.create({
   inner: {
     flex: 1,
     alignItems: 'center',
-   justifyContent: 'flex-end',
+    justifyContent: 'flex-end',
   },
   formBlock: {
     width: '100%',
@@ -167,13 +167,13 @@ const styles = StyleSheet.create({
     fontSize: 11,
     letterSpacing: 3,
     marginBottom: 12,
-    fontFamily: 'Oswald_400Regular',
+    fontFamily: 'Inter_600SemiBold',
   },
   fieldLabel: {
     alignSelf: 'flex-start',
     color: GOLD,
     fontSize: 10,
-    fontFamily: 'Oswald_600SemiBold',
+    fontFamily: 'Inter_700Bold',
     letterSpacing: 1.5,
     marginBottom: 4,
   },
@@ -196,6 +196,7 @@ const styles = StyleSheet.create({
     color: '#FFF',
     fontSize: 14,
     paddingVertical: 11,
+    fontFamily: 'Inter_400Regular',
   },
   forgotWrap: {
     alignSelf: 'flex-end',
@@ -204,7 +205,7 @@ const styles = StyleSheet.create({
   forgotText: {
     color: GOLD,
     fontSize: 12,
-    fontFamily: 'Oswald_400Regular',
+    fontFamily: 'Inter_400Regular',
   },
   loginButton: {
     width: '100%',
@@ -217,7 +218,7 @@ const styles = StyleSheet.create({
   loginButtonText: {
     color: BLACK,
     fontSize: 15,
-    fontFamily: 'Oswald_700Bold',
+    fontFamily: 'Inter_700Bold',
     letterSpacing: 2,
   },
   dividerRow: {
@@ -235,17 +236,17 @@ const styles = StyleSheet.create({
     color: '#555',
     fontSize: 11,
     marginHorizontal: 10,
-    fontFamily: 'Oswald_400Regular',
+    fontFamily: 'Inter_400Regular',
   },
   signupLink: {
     color: '#AAA',
     fontSize: 13,
     marginBottom: 12,
-    fontFamily: 'Oswald_400Regular',
+    fontFamily: 'Inter_400Regular',
   },
   signupLinkBold: {
     color: GOLD,
-    fontFamily: 'Oswald_700Bold',
+    fontFamily: 'Inter_700Bold',
   },
   trustRow: {
     flexDirection: 'row',
@@ -261,7 +262,7 @@ const styles = StyleSheet.create({
   trustTitle: {
     color: '#FFF',
     fontSize: 8,
-    fontFamily: 'Oswald_700Bold',
+    fontFamily: 'Inter_700Bold',
     letterSpacing: 0.5,
     textAlign: 'center',
     marginTop: 4,
@@ -272,11 +273,13 @@ const styles = StyleSheet.create({
     fontSize: 9,
     textAlign: 'center',
     lineHeight: 13,
+    fontFamily: 'Inter_400Regular',
   },
   disclaimer: {
     color: '#FFF',
     fontSize: 10,
     textAlign: 'center',
     lineHeight: 16,
+    fontFamily: 'Inter_400Regular',
   },
 });
