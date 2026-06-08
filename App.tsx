@@ -16,6 +16,21 @@ import ProfileScreen from './Screens/ProfileScreen';
 import LoginScreen from './Screens/LoginScreen';
 import SignupScreen from './Screens/SignupScreen';
 import SettingsScreen from './Screens/SettingsScreen';
+import * as Sentry from '@sentry/react-native';
+
+Sentry.init({
+  dsn: 'https://5b27e3b2ca5883ec8db2909d39ebbab7@o4511531146280960.ingest.us.sentry.io/4511531146477568',
+
+  // Adds more context data to events (IP address, cookies, user, etc.)
+  // For more information, visit: https://docs.sentry.io/platforms/react-native/data-management/data-collected/
+  sendDefaultPii: true,
+
+  // Enable Logs
+  enableLogs: false,
+
+  // uncomment the line below to enable Spotlight (https://spotlightjs.com)
+  // spotlight: __DEV__,
+});
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -85,7 +100,7 @@ function MainTabs({ onLogout }: { onLogout: () => void }) {
   );
 }
 
-export default function App() {
+export default Sentry.wrap(function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -148,7 +163,7 @@ export default function App() {
       </NavigationContainer>
     </SafeAreaProvider>
   );
-}
+});
 
 const styles = StyleSheet.create({
   tabBar: {

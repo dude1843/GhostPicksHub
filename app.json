@@ -30,7 +30,16 @@
       "favicon": "./assets/logo_back.png"
     },
     "plugins": [
-      "expo-font"
+      "expo-font",
+      "@sentry/react-native",
+      [
+        "@sentry/react-native/expo",
+        {
+          "url": "https://sentry.io/",
+          "project": "react-native",
+          "organization": "ghost-picks-ats"
+        }
+      ]
     ],
     "extra": {
       "eas": {
