@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View, Text, StyleSheet, ScrollView,
-  TouchableOpacity, Image, Modal, SafeAreaView, Dimensions, Alert
+  TouchableOpacity, Image, Modal, SafeAreaView, Dimensions, Alert, ActivityIndicator
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Purchases from 'react-native-purchases';
@@ -79,8 +79,24 @@ const CAPPERS = [
 export default function VIPScreen() {
   const [selectedCapper, setSelectedCapper] = useState<(typeof CAPPERS)[0] | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
-  const [isVip, setIsVip] = useState(true);
+  const [isVip, setIsVip] = useState(false);
+  const [checkingVip, setCheckingVip] = useState(true);
   const [purchasing, setPurchasing] = useState<string | null>(null);
+
+  useEffect(() => {
+    const checkSubscription = async () => {
+      try {
+        const customerInfo = await Purchases.getCustomerInfo();
+        const active = customerInfo.entitlements.active;
+        setIsVip(!!active['vip_access']);
+      } catch (e) {
+        setIsVip(false);
+      } finally {
+        setCheckingVip(false);
+      }
+    };
+    checkSubscription();
+  }, []);
 
   const handleCapperPress = (capper: (typeof CAPPERS)[0]) => {
     setSelectedCapper(capper);
@@ -101,7 +117,8 @@ export default function VIPScreen() {
         return;
       }
       await Purchases.purchaseStoreProduct(products[0]);
-      setIsVip(true);
+      const customerInfo = await Purchases.getCustomerInfo();
+      setIsVip(!!customerInfo.entitlements.active['vip_access']);
       closeModal();
       Alert.alert('Welcome to VIP!', 'You now have full access to all picks.');
     } catch (e: any) {
@@ -217,6 +234,14 @@ export default function VIPScreen() {
       </Modal>
     );
   };
+
+  if (checkingVip) {
+    return (
+      <View style={{ flex: 1, backgroundColor: BLACK, alignItems: 'center', justifyContent: 'center' }}>
+        <ActivityIndicator size="large" color={GOLD} />
+      </View>
+    );
+  }
 
   if (!isVip) {
     return (
